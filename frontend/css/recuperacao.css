@@ -1,0 +1,395 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+body.background {
+  background: url("../../images/backgroundlogin.png") no-repeat center center
+    fixed;
+  background-size: cover;
+  background-color: rgb(0, 0, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgb(0, 0, 0);
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  padding: 60px 20px 30px 20px;
+  width: 380px;
+  border-radius: 30px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 3px solid rgba(250, 250, 250, 0.9);
+}
+
+.top-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.top-header h3 {
+  font-size: 26px;
+  font-weight: 600;
+  color: #333;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.step {
+  width: 100%;
+}
+
+.input-group {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.input-field {
+  margin: 12px 0;
+  position: relative;
+}
+
+.input-box {
+  width: 100%;
+  height: 50px;
+  font-size: 18px;
+  color: #040404;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  background: rgba(192, 192, 192, 0.719);
+  transition: 0.3s ease-in-out;
+  outline: none;
+}
+
+.input-box:focus,
+.input-box:valid {
+  background: rgba(192, 192, 192, 0.9);
+}
+
+.input-field label {
+  position: absolute;
+  left: 20px;
+  top: 15px;
+  font-size: 15px;
+  transition: 0.3s ease-in-out;
+  color: #666;
+}
+
+.input-box:focus ~ label,
+.input-box:valid ~ label {
+  top: 2px;
+  font-size: 12px;
+  color: #000000;
+  font-weight: 500;
+}
+
+.eye-area {
+  position: absolute;
+  top: 50%;
+  right: 25px;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.eye-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.eye-box i {
+  position: absolute;
+  color: #444444;
+  font-size: 18px;
+  pointer-events: none;
+}
+
+#eye-1,
+#eye-2 {
+  opacity: 1;
+}
+
+#eye-slash-1,
+#eye-slash-2 {
+  opacity: 0;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+  min-height: 20px;
+}
+
+.input-submit {
+  width: 100%;
+  height: 50px;
+  font-size: 18px;
+  font-weight: 500;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.4s;
+}
+
+.input-submit#btn-request-code {
+  background: #007bff;
+  color: #ffffff;
+}
+
+.input-submit#btn-request-code:hover {
+  background: #0056b3;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.input-submit#btn-verify-code {
+  background: #ffc107;
+  color: #080808;
+}
+
+.input-submit#btn-verify-code:hover {
+  background: #e0a800;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.input-submit#btn-submit {
+  background: #29f143;
+  color: #080808;
+}
+
+.input-submit#btn-submit:hover {
+  background: #1de136;
+  box-shadow: 0px 4px 20px rgba(62, 9, 9, 0.32);
+}
+
+.back-to-login {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.back-to-login a {
+  text-decoration: none;
+  color: #000;
+}
+
+.back-to-login a:hover {
+  color: #007bff;
+}
+
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.toast {
+  background: #333;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+.toast.error {
+  background: #dc3545;
+}
+
+.toast.success {
+  background: #28a745;
+}
+
+/* Password Strength Indicator */
+.password-strength-container {
+  margin-top: 5px;
+  width: 100%;
+}
+
+.password-strength-bar {
+  width: 100%;
+  height: 4px;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+
+.password-strength-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  background-color: #ccc;
+}
+
+.password-strength-fill.weak {
+  background-color: #ff4444;
+  width: 25%;
+}
+
+.password-strength-fill.fair {
+  background-color: #ff8800;
+  width: 50%;
+}
+
+.password-strength-fill.good {
+  background-color: #ffbb33;
+  width: 75%;
+}
+
+.password-strength-fill.strong {
+  background-color: #00c851;
+  width: 100%;
+}
+
+.password-strength-text {
+  font-size: 9px;
+  color: #666;
+  text-align: left;
+  margin-top: 1px;
+}
+
+.password-strength-text.weak {
+  color: #ff4444;
+}
+
+.password-strength-text.fair {
+  color: #ff8800;
+}
+
+.password-strength-text.good {
+  color: #ffbb33;
+}
+
+.password-strength-text.strong {
+  color: #00c851;
+}
+
+.password-match-text {
+  font-size: 9px;
+  color: #666;
+  text-align: left;
+  margin-top: 3px;
+}
+
+.password-match-text.match {
+  color: #00c851;
+}
+
+.password-match-text.no-match {
+  color: #ff4444;
+}
+
+/* Password Criteria Box */
+#passwordCriteriaBox {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.07);
+  padding: 8px 12px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  transition: box-shadow 0.2s;
+  position: relative;
+  z-index: 10;
+  min-width: 180px;
+}
+
+#passwordCriteriaBox li {
+  margin-bottom: 4px;
+  padding-left: 16px;
+  position: relative;
+  font-size: 0.75rem;
+  color: #c0392b;
+  transition: color 0.2s;
+}
+
+#passwordCriteriaBox li:last-child {
+  margin-bottom: 0;
+}
+
+#passwordCriteriaBox li::before {
+  content: "✗";
+  position: absolute;
+  left: 0;
+  color: #c0392b;
+  font-size: 0.9em;
+  transition: color 0.2s;
+}
+
+#passwordCriteriaBox li[style*="green"] {
+  color: #27ae60 !important;
+}
+
+#passwordCriteriaBox li[style*="green"]::before {
+  content: "✓";
+  color: #27ae60;
+}
+
+#passwordCriteriaBox {
+  animation: fadeInCriteria 0.3s;
+}
+
+@keyframes fadeInCriteria {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .box {
+    margin: 0 5px;
+    width: 90%;
+  }
+
+  #passwordCriteriaBox {
+    min-width: auto;
+    width: 100%;
+  }
+}

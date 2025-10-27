@@ -1,0 +1,604 @@
+/* Importação de Fonte */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+/* Estilos Gerais */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Corpo com background */
+body.background {
+  background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.581),
+      rgba(0, 0, 0, 0.575)
+    ),
+    url("../../images/bar_insted_4.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* Cabeçalho */
+header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  color: #ffffff;
+  max-height: 12vh;
+}
+
+/* Navegação */
+nav {
+  display: flex;
+  align-items: center;
+}
+
+ul {
+  display: flex;
+  background-color: #1f2a44;
+  list-style-type: none;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+li a {
+  display: block;
+  color: white;
+  padding: 14px 16px;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+li a:hover {
+  background-color: #3b82f6;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.575);
+  color: black;
+}
+
+/* Estilos para o popup do reCAPTCHA */
+.modal {
+  display: none !important;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.modal.active {
+  display: flex !important;
+  opacity: 1;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  position: relative;
+  transform: translateY(-20px);
+  transition: transform 0.3s ease-in-out;
+}
+
+.modal.active .modal-content {
+  transform: translateY(0);
+}
+
+.modal-content h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+
+.modal-content p {
+  margin: 0 0 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.3s;
+}
+
+.modal-content .close:hover {
+  color: #000;
+}
+
+#recaptchaContainer {
+  margin: 15px auto;
+  display: inline-block;
+}
+
+#recaptchaModalError {
+  color: red;
+  font-size: 12px;
+  margin-top: 10px;
+  display: block;
+}
+
+/* Container */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Acessibilidade - vw */
+[vw] {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+}
+
+/* Box de Login/Registro - AJUSTADO APENAS O TAMANHO */
+.box {
+  display: flex;
+  position: relative;
+  padding: 40px 20px 20px 20px;
+  height: 550px;
+  width: 100%;
+  max-width: 380px;
+  border-radius: 30px;
+  background-color: #fff;
+  border: 3px solid #fafafa;
+  overflow: hidden;
+  opacity: 0.95;
+}
+
+/* Formulários - MANTIDO ORIGINAL */
+.box-login {
+  position: absolute;
+  width: calc(100% - 40px);
+  left: 20px;
+  right: 20px;
+  top: 40px;
+  bottom: 80px;
+  transition: 0.5s ease-in-out;
+  overflow-y: auto;
+}
+
+.box-register {
+  position: absolute;
+  width: calc(100% - 40px);
+  right: -100%;
+  top: 40px;
+  bottom: 80px;
+  transition: 0.5s ease-in-out;
+  overflow-y: auto;
+}
+
+/* Cabeçalho Formulário */
+.top-header {
+  text-align: center;
+  margin: 15px 0 20px 0;
+}
+
+.logo {
+  width: 15%;
+  min-width: 40px;
+  max-width: 60px;
+  margin-bottom: 8px;
+}
+
+.top-header h3 {
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin-bottom: 5px;
+}
+
+/* Inputs */
+.input-group {
+  width: 100%;
+}
+
+.input-field {
+  margin: 8px 0 15px 0;
+  position: relative;
+}
+
+.input-box {
+  width: 100%;
+  height: 38px;
+  font-size: 14px;
+  color: #040404;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 40px 0 15px;
+  background: rgba(192, 192, 192, 0.719);
+  backdrop-filter: blur(2px);
+  outline: none;
+}
+
+.input-field label {
+  position: absolute;
+  left: 15px;
+  top: 12px;
+  font-size: 13px;
+  transition: 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.input-box:focus ~ label,
+.input-box:valid ~ label {
+  top: 1px;
+  font-size: 9px;
+  color: #000;
+  font-weight: 500;
+}
+
+/* Lembrete e Submit */
+.remember {
+  display: flex;
+  font-size: 12px;
+  margin: 8px 0 15px 0;
+  color: #000;
+  align-items: center;
+}
+
+.check {
+  margin-right: 6px;
+  width: 12px;
+  height: 12px;
+}
+
+.input-submit {
+  width: 100%;
+  height: 38px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  background: #29f143;
+  color: #080808;
+  box-shadow: 0px 2px 8px rgba(62, 9, 9, 0.144);
+  cursor: pointer;
+  transition: 0.4s;
+  margin-bottom: 10px;
+}
+
+.input-submit:hover {
+  background: #29f143;
+  box-shadow: 0px 2px 12px rgba(62, 9, 9, 0.32);
+}
+
+input:focus {
+  box-shadow: 0px 1px 4px #29f143;
+}
+
+/* Esqueci a Senha */
+.forgot {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.forgot a {
+  text-decoration: none;
+  color: #000;
+}
+
+/* Alternância Login/Registro */
+.switch {
+  display: flex;
+  position: absolute;
+  bottom: 15px;
+  left: 20px;
+  right: 20px;
+  width: calc(100% - 40px);
+  height: 45px;
+  background: rgba(75, 74, 74, 0.16);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.switch a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: #000;
+  text-decoration: none;
+  width: 50%;
+  height: 100%;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+#btn {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 50%;
+  height: 45px;
+  background: #acacad;
+  border-radius: 8px;
+  box-shadow: 1px 0px 6px rgba(0, 0, 0, 0.1);
+  transition: 0.5s ease-in-out;
+}
+
+/* Ícones de Senha */
+.eye-area {
+  position: absolute;
+  top: 20px;
+  right: 15px;
+}
+
+.eye-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+i {
+  position: absolute;
+  color: #444;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#eye,
+#eye-2 {
+  opacity: 1;
+}
+
+#eye-slash,
+#eye-slash-2,
+#eye-slash-3 {
+  opacity: 0;
+}
+
+/* Mensagens de Erro */
+.error-message {
+  color: red;
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+/* Password Strength Indicator */
+.password-strength-container {
+  margin-top: 5px;
+  width: 100%;
+}
+
+.password-strength-bar {
+  width: 100%;
+  height: 4px;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+
+.password-strength-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  background-color: #ccc;
+}
+
+.password-strength-fill.weak {
+  background-color: #ff4444;
+  width: 25%;
+}
+
+.password-strength-fill.fair {
+  background-color: #ff8800;
+  width: 50%;
+}
+
+.password-strength-fill.good {
+  background-color: #ffbb33;
+  width: 75%;
+}
+
+.password-strength-fill.strong {
+  background-color: #00c851;
+  width: 100%;
+}
+
+.password-strength-text {
+  font-size: 9px;
+  color: #666;
+  text-align: left;
+  margin-top: 1px;
+}
+
+.password-strength-text.weak {
+  color: #ff4444;
+}
+
+.password-strength-text.fair {
+  color: #ff8800;
+}
+
+.password-strength-text.good {
+  color: #ffbb33;
+}
+
+.password-strength-text.strong {
+  color: #00c851;
+}
+
+.password-match-text {
+  font-size: 9px;
+  color: #666;
+  text-align: left;
+  margin-top: 3px;
+}
+
+.password-match-text.match {
+  color: #00c851;
+}
+
+.password-match-text.no-match {
+  color: #ff4444;
+}
+
+/* Password Criteria Box */
+#passwordCriteriaBox {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.07);
+  padding: 8px 12px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  transition: box-shadow 0.2s;
+  position: relative;
+  z-index: 10;
+  min-width: 180px;
+}
+
+#passwordCriteriaBox li {
+  margin-bottom: 4px;
+  padding-left: 16px;
+  position: relative;
+  font-size: 0.75rem;
+  color: #c0392b;
+  transition: color 0.2s;
+}
+
+#passwordCriteriaBox li:last-child {
+  margin-bottom: 0;
+}
+
+#passwordCriteriaBox li::before {
+  content: "✗";
+  position: absolute;
+  left: 0;
+  color: #c0392b;
+  font-size: 0.9em;
+  transition: color 0.2s;
+}
+
+#passwordCriteriaBox li[style*="green"] {
+  color: #27ae60 !important;
+}
+
+#passwordCriteriaBox li[style*="green"]::before {
+  content: "✓";
+  color: #27ae60;
+}
+
+#passwordCriteriaBox {
+  animation: fadeInCriteria 0.3s;
+}
+
+@keyframes fadeInCriteria {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scroll personalizado para overflow */
+.box-login::-webkit-scrollbar,
+.box-register::-webkit-scrollbar {
+  width: 4px;
+}
+
+.box-login::-webkit-scrollbar-track,
+.box-register::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.box-login::-webkit-scrollbar-thumb,
+.box-register::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+/* RESPONSIVIDADE BÁSICA APENAS */
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+
+  .box {
+    width: 95%;
+    min-width: 280px;
+    height: 480px;
+    padding: 25px 15px 15px;
+  }
+
+  .box-login,
+  .box-register {
+    width: calc(100% - 30px);
+    left: 15px;
+    top: 25px;
+    bottom: 70px;
+  }
+
+  .box-register {
+    right: -100%;
+  }
+
+  .logo {
+    width: 18%;
+    min-width: 35px;
+    max-width: 50px;
+  }
+
+  .top-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .input-box {
+    height: 35px;
+    font-size: 13px;
+  }
+
+  .input-submit {
+    height: 35px;
+    font-size: 13px;
+  }
+
+  .switch {
+    height: 40px;
+    bottom: 10px;
+    left: 15px;
+    right: 15px;
+    width: calc(100% - 30px);
+  }
+
+  #btn {
+    height: 40px;
+  }
+}

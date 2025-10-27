@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recuperação de Senha</title>
+    <link rel="stylesheet" href="../css/recuperacao.css" />
+    <link rel="stylesheet" href="../css/toast.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+  </head>
+
+  <body class="background">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="box">
+        <div class="top-header">
+          <h3>Recuperação de Senha</h3>
+        </div>
+        <form id="form-recuperacao">
+          <!-- Etapa 1: Campo de e-mail -->
+          <div id="email-step" class="step">
+            <div class="input-group">
+              <div class="input-field">
+                <input type="email" class="input-box" id="email" required />
+                <label for="email">Digite seu e-mail</label>
+              </div>
+              <div class="error-message" id="error-message-email"></div>
+              <button type="button" class="input-submit" id="btn-request-code">
+                Solicitar Código
+              </button>
+            </div>
+          </div>
+          <!-- Etapa 2: Campo de código -->
+          <div id="code-step" class="step" style="display: none">
+            <div class="input-group">
+              <div class="input-field">
+                <input type="text" class="input-box" id="code" required />
+                <label for="code">Código de Verificação</label>
+              </div>
+              <div class="error-message" id="error-message-code"></div>
+              <button type="button" class="input-submit" id="btn-verify-code">
+                Verificar Código
+              </button>
+            </div>
+          </div>
+          <!-- Etapa 3: Campos de senha -->
+          <div id="password-step" class="step" style="display: none">
+            <div class="input-group">
+              <div class="input-field">
+                <input
+                  type="password"
+                  class="input-box"
+                  id="new-password"
+                  required
+                />
+                <label for="new-password">Digite sua nova senha</label>
+                <div class="eye-area">
+                  <div class="eye-box">
+                    <i class="fa-solid fa-eye" id="eye-1"></i>
+                    <i class="fa-solid fa-eye-slash" id="eye-slash-1"></i>
+                  </div>
+                </div>
+                <!-- Password Strength Indicator -->
+                <div
+                  class="password-strength-container"
+                  id="newPasswordStrengthContainer"
+                >
+                  <div class="password-strength-bar">
+                    <div
+                      class="password-strength-fill"
+                      id="newPasswordStrengthFill"
+                    ></div>
+                  </div>
+                  <div
+                    class="password-strength-text"
+                    id="newPasswordStrengthText"
+                  >
+                    Digite uma senha
+                  </div>
+                </div>
+                <!-- Password Criteria (agora está logo abaixo do campo de senha) -->
+                <ul
+                  id="passwordCriteriaBox"
+                  style="
+                    list-style: none;
+                    padding: 0;
+                    margin-top: 8px;
+                    display: none;
+                  "
+                ></ul>
+              </div>
+              <div class="input-field">
+                <input
+                  type="password"
+                  class="input-box"
+                  id="confirm-password"
+                  required
+                />
+                <label for="confirm-password">Confirme sua nova senha</label>
+                <div class="eye-area">
+                  <div class="eye-box">
+                    <i class="fa-solid fa-eye" id="eye-2"></i>
+                    <i class="fa-solid fa-eye-slash" id="eye-slash-2"></i>
+                  </div>
+                </div>
+                <!-- Password Match Indicator -->
+                <div
+                  class="password-strength-container"
+                  id="confirmPasswordStrengthContainer"
+                >
+                  <div
+                    class="password-match-text"
+                    id="confirmPasswordMatchText"
+                  ></div>
+                </div>
+              </div>
+              <div class="error-message" id="error-message-password"></div>
+              <button type="submit" class="input-submit" id="btn-submit">
+                Recuperar Senha
+              </button>
+            </div>
+          </div>
+        </form>
+        <div class="back-to-login">
+          <a href="./login.html">Voltar para o Login</a>
+        </div>
+      </div>
+    </div>
+    <div class="toast-container" id="toast-container"></div>
+    <script src="../js/authGuard.js"></script>
+    <script src="../js/recuperacao.js"></script>
+
+    <div vw class="enabled">
+      <div
+        vw-access-button
+        class="active"
+        aria-label="Ativar acessibilidade VLibras"
+      ></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
+  </body>
+</html>

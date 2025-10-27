@@ -1,0 +1,268 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", "Open Sans", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f6fff9 0%, #eafaf7 100%);
+  background-image: url("../../images/back_home.png");
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #2a4a4a;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(30, 30, 30, 0.58);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Conteúdo acima do overlay */
+header,
+.contato {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2rem;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.1);
+  border-radius: 0 0 18px 18px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  background: none;
+}
+
+nav a {
+  text-decoration: none;
+  color: #2a4a4a;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  transition: all 0.3s;
+  font-weight: 600;
+  border: 1px solid #b3e6e0;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
+}
+
+nav a:hover {
+  background: #e0f7e9;
+  color: #27ae60;
+  outline: none;
+}
+
+.acessibilidade button {
+  margin-left: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: #f6d676;
+  border: none;
+  border-radius: 6px;
+  color: #2a4a4a;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.acessibilidade button:hover {
+  background: #ebc650;
+}
+
+/* Formulário de Contato */
+.contato {
+  margin-top: 110px;
+  background: rgba(255, 255, 255, 0.92);
+  width: 90%;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2.5rem 2rem;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18),
+    0 1.5px 6px rgba(44, 62, 80, 0.08);
+  backdrop-filter: blur(8px);
+  border: none;
+  transition: box-shadow 0.3s, background 0.3s;
+}
+
+.contato:hover,
+.contato:focus-within {
+  box-shadow: 0 12px 40px rgba(44, 62, 80, 0.22),
+    0 2px 8px rgba(44, 62, 80, 0.12);
+  background: rgba(255, 255, 255, 0.99);
+}
+
+.contato h2 {
+  text-align: center;
+  color: #222;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #2a4a4a;
+  font-weight: 500;
+}
+
+input,
+textarea {
+  padding: 0.7rem;
+  border-radius: 10px;
+  border: 1px solid #b3e6e0;
+  font-size: 1rem;
+  background: rgba(192, 192, 192, 0.13);
+  color: #2a4a4a;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #27ae60;
+  outline: none;
+  box-shadow: 0 0 5px rgba(39, 174, 96, 0.18);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+button.submit-btn {
+  background: #29f143;
+  color: #080808;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s, box-shadow 0.3s;
+  width: fit-content;
+  align-self: center;
+  box-shadow: 0px 4px 20px rgba(62, 9, 9, 0.144);
+}
+
+button.submit-btn:hover {
+  background: #27ae60;
+  color: #fff;
+  box-shadow: 0px 4px 20px rgba(62, 9, 9, 0.32);
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .contato {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.7rem 0.5rem;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .logo img {
+    width: 50px;
+    height: 50px;
+  }
+
+  nav ul {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .contato {
+    padding: 1.2rem 0.5rem;
+    border-radius: 16px;
+  }
+
+  button.submit-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .contato h2 {
+    font-size: 1.3rem;
+  }
+
+  input,
+  textarea {
+    font-size: 0.95rem;
+    padding: 0.5rem;
+  }
+
+  button.submit-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .contato {
+    width: 98%;
+    padding: 0.7rem 0.2rem;
+    border-radius: 10px;
+  }
+
+  .contato h2 {
+    font-size: 1.1rem;
+  }
+
+  input,
+  textarea {
+    font-size: 0.85rem;
+  }
+
+  button.submit-btn {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.85rem;
+  }
+}
