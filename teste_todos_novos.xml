@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CENÁRIO 1: Todos os produtos são desconhecidos → vão para produtos_temporarios -->
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe">
+  <NFe>
+    <infNFe>
+      <ide>
+        <nNF>999001</nNF>
+        <dhEmi>2025-03-10T09:00:00-03:00</dhEmi>
+      </ide>
+      <emit>
+        <CNPJ>12345678000195</CNPJ>
+        <xNome>Distribuidora Teste A LTDA</xNome>
+      </emit>
+      <det nItem="1">
+        <prod>
+          <cEAN>4001234567890</cEAN>
+          <xProd>ENERGETICO RED BULL 250ML</xProd>
+          <qCom>24</qCom>
+          <vUnCom>8.50</vUnCom>
+        </prod>
+      </det>
+      <det nItem="2">
+        <prod>
+          <cEAN>4009876543210</cEAN>
+          <xProd>BARRA DE CEREAL NUTRI 30G</xProd>
+          <qCom>48</qCom>
+          <vUnCom>2.75</vUnCom>
+        </prod>
+      </det>
+      <det nItem="3">
+        <prod>
+          <cEAN>4001112223330</cEAN>
+          <xProd>AGUA MINERAL COM GAS 500ML</xProd>
+          <qCom>60</qCom>
+          <vUnCom>3.20</vUnCom>
+        </prod>
+      </det>
+      <det nItem="4">
+        <prod>
+          <cEAN>4005556667770</cEAN>
+          <xProd>CHOCOLATE AO LEITE 100G</xProd>
+          <qCom>30</qCom>
+          <vUnCom>5.90</vUnCom>
+        </prod>
+      </det>
+      <det nItem="5">
+        <prod>
+          <cEAN>4008889990000</cEAN>
+          <xProd>ISOTÔNICO GATORADE 500ML</xProd>
+          <qCom>36</qCom>
+          <vUnCom>6.50</vUnCom>
+        </prod>
+      </det>
+    </infNFe>
+  </NFe>
+</nfeProc>

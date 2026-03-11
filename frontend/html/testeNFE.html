@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste API NF-e</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: monospace;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #4ec9b0;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      height: calc(100vh - 80px);
+    }
+
+    /* ---- PAINEL ESQUERDO ---- */
+    .painel-rotas {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .secao-titulo {
+      font-size: 11px;
+      color: #858585;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    /* Campo de token */
+    .token-box {
+      background: #252526;
+      border: 1px solid #3c3c3c;
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .token-box label {
+      font-size: 11px;
+      color: #858585;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .token-box input {
+      width: 100%;
+      background: #1e1e1e;
+      border: 1px solid #3c3c3c;
+      color: #ce9178;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 11px;
+    }
+
+    /* Botão de login rápido */
+    .login-box {
+      background: #252526;
+      border: 1px solid #3c3c3c;
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .login-box input {
+      background: #1e1e1e;
+      border: 1px solid #3c3c3c;
+      color: #d4d4d4;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    /* Botões de rota */
+    .btn-rota {
+      background: #252526;
+      border: 1px solid #3c3c3c;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-rota:hover { background: #2d2d30; }
+    .btn-rota:active { background: #094771; }
+
+    .metodo {
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 3px;
+      min-width: 38px;
+      text-align: center;
+    }
+
+    .get  { background: #094771; color: #4fc3f7; }
+    .post { background: #1b4332; color: #4ec9b0; }
+
+    .rota-nome {
+      font-size: 12px;
+      color: #d4d4d4;
+    }
+
+    /* Input de ID */
+    .input-id {
+      background: #1e1e1e;
+      border: 1px solid #3c3c3c;
+      color: #d4d4d4;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      width: 100%;
+    }
+
+    /* Upload */
+    .upload-box {
+      background: #252526;
+      border: 1px solid #3c3c3c;
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .upload-box label {
+      font-size: 11px;
+      color: #858585;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .upload-box input[type="file"] {
+      font-size: 11px;
+      color: #d4d4d4;
+      width: 100%;
+    }
+
+    button.btn-acao {
+      background: #0e639c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 12px;
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    button.btn-acao:hover { background: #1177bb; }
+
+    /* ---- PAINEL DIREITO ---- */
+    .painel-resposta {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .resposta-header {
+      background: #252526;
+      border: 1px solid #3c3c3c;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .resposta-header span {
+      font-size: 12px;
+      color: #858585;
+    }
+
+    #status-badge {
+      font-size: 12px;
+      font-weight: bold;
+      padding: 2px 10px;
+      border-radius: 10px;
+      background: #3c3c3c;
+      color: #858585;
+    }
+
+    #status-badge.ok  { background: #1b4332; color: #4ec9b0; }
+    #status-badge.err { background: #4b1113; color: #f48771; }
+
+    #output {
+      flex: 1;
+      background: #1e1e1e;
+      border: 1px solid #3c3c3c;
+      border-radius: 0 0 6px 6px;
+      padding: 16px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #9cdcfe;
+    }
+
+    .loading { color: #858585; font-style: italic; }
+    .comentario { color: #6a9955; }
+  </style>
+</head>
+<body>
+
+<h1>🧪 Teste API NF-e — QRUP</h1>
+
+<div class="grid">
+
+  <!-- ==================== PAINEL ESQUERDO ==================== -->
+  <div class="painel-rotas">
+
+    <!-- Login rápido -->
+    <div class="secao-titulo">1. Fazer login</div>
+    <div class="login-box">
+      <input type="email" id="input-email" placeholder="email admin" value="admin@gmail.com">
+      <input type="password" id="input-senha" placeholder="senha">
+      <button class="btn-acao" onclick="fazerLogin()">🔑 Login e salvar token</button>
+    </div>
+
+    <!-- Token manual -->
+    <div class="token-box">
+      <label>Token JWT (preenchido após login)</label>
+      <input type="text" id="token-input" placeholder="ou cole seu token aqui...">
+    </div>
+
+    <!-- Importar NF-e -->
+    <div class="secao-titulo">2. Importar NF-e</div>
+    <div class="upload-box">
+      <label>Selecione o arquivo .xml</label>
+      <input type="file" id="arquivo-xml" accept=".xml">
+      <button class="btn-acao" onclick="importarNfe()">📤 POST /api/nfe/importar</button>
+    </div>
+
+    <!-- Rotas GET simples -->
+    <div class="secao-titulo">3. Consultar</div>
+
+    <button class="btn-rota" onclick="chamar('GET', '/api/nfe/estatisticas')">
+      <span class="metodo get">GET</span>
+      <span class="rota-nome">/api/nfe/estatisticas</span>
+    </button>
+
+    <button class="btn-rota" onclick="chamar('GET', '/api/nfe')">
+      <span class="metodo get">GET</span>
+      <span class="rota-nome">/api/nfe &nbsp;(lista todas)</span>
+    </button>
+
+    <!-- Rotas com ID -->
+    <div class="secao-titulo">4. Por ID</div>
+    <input class="input-id" type="number" id="input-id" placeholder="ID da nota (ex: 1)" value="1">
+
+    <button class="btn-rota" onclick="chamarComId('/api/nfe/')">
+      <span class="metodo get">GET</span>
+      <span class="rota-nome">/api/nfe/:id</span>
+    </button>
+
+    <button class="btn-rota" onclick="chamarComId('/api/nfe/', '/divergencias')">
+      <span class="metodo get">GET</span>
+      <span class="rota-nome">/api/nfe/:id/divergencias</span>
+    </button>
+
+  </div>
+
+  <!-- ==================== PAINEL DIREITO ==================== -->
+  <div class="painel-resposta">
+    <div class="resposta-header">
+      <span id="rota-chamada">Nenhuma requisição feita ainda</span>
+      <span id="status-badge">—</span>
+    </div>
+    <pre id="output"><span class="comentario">// A resposta da API vai aparecer aqui
+// Faça login primeiro, depois teste as rotas</span></pre>
+  </div>
+
+</div>
+
+<script>
+  const API = 'http://localhost:3000';
+
+  // -------------------------------------------------------
+  // Pega o token do input
+  // -------------------------------------------------------
+  function getToken() {
+    return document.getElementById('token-input').value.trim();
+  }
+
+    // Recupera token ao carregar a página
+    window.addEventListener('load', () => {
+    const tokenSalvo = localStorage.getItem('token_teste');
+    if (tokenSalvo) {
+        document.getElementById('token-input').value = tokenSalvo;
+    }
+    });
+
+  // -------------------------------------------------------
+  // Atualiza o painel de resposta
+  // -------------------------------------------------------
+  function mostrarResposta(rotaTexto, status, dados) {
+    const badge = document.getElementById('status-badge');
+    badge.textContent = status;
+    badge.className = status >= 200 && status < 300 ? 'ok' : 'err';
+
+    document.getElementById('rota-chamada').textContent = rotaTexto;
+    document.getElementById('output').innerHTML = JSON.stringify(dados, null, 2)
+      .replace(/"([^"]+)":/g, '<span style="color:#9cdcfe">"$1"</span>:')
+      .replace(/: "([^"]+)"/g, ': <span style="color:#ce9178">"$1"</span>')
+      .replace(/: (\d+\.?\d*)/g, ': <span style="color:#b5cea8">$1</span>')
+      .replace(/: (true|false)/g, ': <span style="color:#569cd6">$1</span>')
+      .replace(/: (null)/g, ': <span style="color:#569cd6">null</span>');
+  }
+
+  function mostrarLoading(rota) {
+    document.getElementById('rota-chamada').textContent = rota;
+    document.getElementById('status-badge').textContent = '...';
+    document.getElementById('status-badge').className = '';
+    document.getElementById('output').innerHTML = '<span class="loading">Aguardando resposta...</span>';
+  }
+
+  // -------------------------------------------------------
+  // LOGIN RÁPIDO
+  // -------------------------------------------------------
+  async function fazerLogin() {
+    const email = document.getElementById('input-email').value;
+    const senha = document.getElementById('input-senha').value;
+
+    mostrarLoading('POST /api/login');
+
+    try {
+      const res = await fetch(`${API}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: senha }),
+      });
+
+      const dados = await res.json();
+
+      if (dados.token) {
+      document.getElementById('token-input').value = dados.token;
+      localStorage.setItem('token_teste', dados.token); // salva
+      }
+
+      mostrarResposta('POST /api/login', res.status, dados);
+    } catch (err) {
+      mostrarResposta('POST /api/login', 'ERR', { erro: err.message });
+    }
+  }
+
+  // -------------------------------------------------------
+  // REQUISIÇÃO GET SIMPLES
+  // -------------------------------------------------------
+  async function chamar(metodo, rota) {
+    const token = getToken();
+    if (!token) {
+      alert('Faça login primeiro para obter o token!');
+      return;
+    }
+
+    mostrarLoading(`${metodo} ${rota}`);
+
+    try {
+      const res = await fetch(`${API}${rota}`, {
+        method: metodo,
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+
+      const dados = await res.json();
+      mostrarResposta(`${metodo} ${rota}`, res.status, dados);
+    } catch (err) {
+      mostrarResposta(`${metodo} ${rota}`, 'ERR', { erro: err.message });
+    }
+  }
+
+  // -------------------------------------------------------
+  // REQUISIÇÃO COM ID
+  // -------------------------------------------------------
+  async function chamarComId(prefixo, sufixo = '') {
+    const id = document.getElementById('input-id').value;
+    if (!id) { alert('Informe um ID!'); return; }
+
+    const rota = `${prefixo}${id}${sufixo}`;
+    await chamar('GET', rota);
+  }
+
+  // -------------------------------------------------------
+  // IMPORTAR NF-E (multipart/form-data)
+  // -------------------------------------------------------
+  async function importarNfe() {
+    const token = getToken();
+    if (!token) { alert('Faça login primeiro!'); return; }
+
+    const fileInput = document.getElementById('arquivo-xml');
+    if (!fileInput.files.length) { alert('Selecione um arquivo .xml!'); return; }
+
+    mostrarLoading('POST /api/nfe/importar');
+
+    const formData = new FormData();
+    formData.append('arquivo_nfe', fileInput.files[0]);
+
+    try {
+      const res = await fetch(`${API}/api/nfe/importar`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData,
+      });
+
+      const dados = await res.json();
+      mostrarResposta('POST /api/nfe/importar', res.status, dados);
+    } catch (err) {
+      mostrarResposta('POST /api/nfe/importar', 'ERR', { erro: err.message });
+    }
+  }
+</script>
+
+</body>
+</html>

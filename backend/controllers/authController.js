@@ -50,6 +50,7 @@ const login = async (req, res) => {
 
   try {
     // Validar o token do reCAPTCHA
+    if (process.env.NODE_ENV !== 'development') {
     const recaptchaResponse = await fetch(
       "https://www.google.com/recaptcha/api/siteverify",
       {
@@ -65,6 +66,7 @@ const login = async (req, res) => {
         .status(400)
         .json({ message: "Falha na verificação do reCAPTCHA." });
     }
+  }
 
     // Prosseguir com a validação do login
     const [user] = await new Promise((resolve, reject) => {
