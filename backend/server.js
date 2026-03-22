@@ -6,6 +6,7 @@ const produtosRouter = require("./routes/produtosRoutes.js");
 const perfilRouter = require("./routes/perfilRoutes.js");
 const pedidoRouter = require("./routes/pedidoRoutes.js");
 const relatorioRoutes = require("./routes/relatorioRoutes.js");
+const nfeRoutes = require('./routes/nfeRoutes');
 const rateLimit = require("express-rate-limit");
 const {
   preventPathTraversal,
@@ -75,6 +76,7 @@ app.use(
     maxAge: 86400 // Cache preflight por 24h
   })
 );
+
 
 // Arquivos estáticos
 app.use("/uploads", express.static("uploads"));
@@ -147,6 +149,7 @@ app.use("/api", pedidoRouter);
 app.use("/produtos", produtosRouter);
 app.use("/perfil", perfilRouter);
 app.use("/relatorios", relatorioRoutes);
+app.use('/api/nfe', nfeRoutes);
 
 // ============================================
 // ROTA DE HEALTH CHECK

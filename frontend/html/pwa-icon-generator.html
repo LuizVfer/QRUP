@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PWA Icon Generator - QRUp</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 40px 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 32px;
+      }
+
+      .subtitle {
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 16px;
+      }
+
+      .upload-area {
+        border: 3px dashed #4caf50;
+        border-radius: 15px;
+        padding: 60px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+      }
+
+      .upload-area:hover {
+        background: #f0f9f0;
+        border-color: #45a049;
+      }
+
+      .upload-area.dragover {
+        background: #e8f5e9;
+        border-color: #2e7d32;
+      }
+
+      .upload-icon {
+        font-size: 60px;
+        color: #4caf50;
+        margin-bottom: 15px;
+      }
+
+      .upload-text {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .upload-hint {
+        font-size: 14px;
+        color: #999;
+      }
+
+      #fileInput {
+        display: none;
+      }
+
+      .preview-area {
+        display: none;
+        margin-bottom: 30px;
+      }
+
+      .preview-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .preview-item {
+        text-align: center;
+      }
+
+      .preview-item canvas {
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 5px;
+      }
+
+      .preview-item .size-label {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      button {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 50px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+      }
+
+      .btn-secondary {
+        background: #f5f5f5;
+        color: #666;
+      }
+
+      .btn-secondary:hover {
+        background: #e0e0e0;
+      }
+
+      .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+
+      .info-box h3 {
+        color: #1976d2;
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      .info-box ul {
+        margin-left: 20px;
+        color: #555;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+
+      .success-message {
+        background: #4caf50;
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 20px;
+        display: none;
+        animation: slideDown 0.3s ease;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎨 Gerador de Ícones PWA</h1>
+      <p class="subtitle">
+        Crie todos os ícones necessários para o PWA do QRUp
+      </p>
+
+      <div class="info-box">
+        <h3>📋 Instruções</h3>
+        <ul>
+          <li>Selecione ou arraste uma imagem quadrada (PNG recomendado)</li>
+          <li>Tamanho ideal: 512x512px ou maior</li>
+          <li>Use um logo com fundo transparente ou colorido</li>
+          <li>Os ícones serão gerados automaticamente em todos os tamanhos</li>
+        </ul>
+      </div>
+
+      <div class="success-message" id="successMessage">
+        ✓ Ícones gerados com sucesso! Clique em "Baixar Todos" para salvar.
+      </div>
+
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">📁</div>
+        <div class="upload-text">
+          Clique para selecionar ou arraste uma imagem
+        </div>
+        <div class="upload-hint">PNG, JPG ou SVG - Recomendado: 512x512px</div>
+        <input type="file" id="fileInput" accept="image/*" />
+      </div>
+
+      <div class="preview-area" id="previewArea">
+        <div class="preview-title">Pré-visualização dos Ícones</div>
+        <div class="preview-grid" id="previewGrid"></div>
+
+        <div class="actions">
+          <button class="btn-primary" id="downloadAll">
+            Baixar Todos os Ícones
+          </button>
+          <button class="btn-secondary" id="resetButton">
+            Escolher Outra Imagem
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+      const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+      const uploadArea = document.getElementById("uploadArea");
+      const fileInput = document.getElementById("fileInput");
+      const previewArea = document.getElementById("previewArea");
+      const previewGrid = document.getElementById("previewGrid");
+      const downloadAllBtn = document.getElementById("downloadAll");
+      const resetButton = document.getElementById("resetButton");
+      const successMessage = document.getElementById("successMessage");
+
+      let sourceImage = null;
+      let generatedIcons = {};
+
+      // Upload por clique
+      uploadArea.addEventListener("click", () => fileInput.click());
+
+      // Drag and drop
+      uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("dragover");
+      });
+
+      uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("dragover");
+      });
+
+      uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+          handleImageFile(file);
+        }
+      });
+
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          handleImageFile(file);
+        }
+      });
+
+      function handleImageFile(file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            sourceImage = img;
+            generateIcons();
+          };
+          img.src = e.target.result;
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      function generateIcons() {
+        previewGrid.innerHTML = "";
+        generatedIcons = {};
+
+        sizes.forEach((size) => {
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+
+          const ctx = canvas.getContext("2d");
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
+
+          // Desenha a imagem redimensionada
+          ctx.drawImage(sourceImage, 0, 0, size, size);
+
+          // Salva o canvas
+          generatedIcons[size] = canvas;
+
+          // Cria preview
+          const previewItem = document.createElement("div");
+          previewItem.className = "preview-item";
+
+          const previewCanvas = canvas.cloneNode(true);
+          const sizeLabel = document.createElement("div");
+          sizeLabel.className = "size-label";
+          sizeLabel.textContent = `${size}x${size}`;
+
+          previewItem.appendChild(previewCanvas);
+          previewItem.appendChild(sizeLabel);
+          previewGrid.appendChild(previewItem);
+        });
+
+        uploadArea.style.display = "none";
+        previewArea.style.display = "block";
+        successMessage.style.display = "block";
+      }
+
+      downloadAllBtn.addEventListener("click", async () => {
+        const zip = new JSZip();
+        const iconsFolder = zip.folder("icons");
+
+        // Adiciona cada ícone ao ZIP
+        for (const [size, canvas] of Object.entries(generatedIcons)) {
+          const blob = await new Promise((resolve) => {
+            canvas.toBlob(resolve, "image/png");
+          });
+
+          iconsFolder.file(`icon-${size}x${size}.png`, blob);
+        }
+
+        // Gera e baixa o ZIP
+        const content = await zip.generateAsync({ type: "blob" });
+        saveAs(content, "qrup-pwa-icons.zip");
+
+        // Mostra mensagem de sucesso
+        alert(
+          "✅ Ícones baixados com sucesso!\n\nPróximos passos:\n1. Extraia o arquivo ZIP\n2. Coloque os ícones na pasta /images/ do projeto\n3. O PWA está pronto para usar!",
+        );
+      });
+
+      resetButton.addEventListener("click", () => {
+        uploadArea.style.display = "block";
+        previewArea.style.display = "none";
+        successMessage.style.display = "none";
+        fileInput.value = "";
+        sourceImage = null;
+        generatedIcons = {};
+      });
+    </script>
+  </body>
+</html>

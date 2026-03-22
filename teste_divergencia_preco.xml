@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CENÁRIO 2: Produtos conhecidos MAS com preço diferente do sistema → testa divergência -->
+<!-- Troque os cEAN abaixo pelos barcodes reais de produtos já cadastrados no seu banco -->
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe">
+  <NFe>
+    <infNFe>
+      <ide>
+        <nNF>999005</nNF>
+        <dhEmi>2025-03-11T10:30:00-03:00</dhEmi>
+      </ide>
+      <emit>
+        <CNPJ>98765432000188</CNPJ>
+        <xNome>Fornecedor Bebidas Sul LTDA</xNome>
+      </emit>
+      <det nItem="1">
+        <prod>
+          <!-- Coloque aqui um barcode de produto JÁ CADASTRADO no sistema -->
+          <!-- mas com vUnCom diferente do preco cadastrado -->
+          <cEAN>5428045930468</cEAN>
+          <xProd>COCA COLA LATA 350ML</xProd>
+          <qCom>12</qCom>
+          <vUnCom>2.20</vUnCom>
+        </prod>
+      </det>
+      <det nItem="2">
+        <prod>
+          <cEAN>0111858879677</cEAN>
+          <xProd>PEPSI LATA 350ML</xProd>
+          <qCom>12</qCom>
+          <vUnCom>1.90</vUnCom>
+        </prod>
+      </det>
+      <det nItem="3">
+        <prod>
+          <!-- Produto desconhecido para misturar no teste -->
+          <cEAN>5001234567800</cEAN>
+          <xProd>SUCO NATURAL LARANJA 1L</xProd>
+          <qCom>20</qCom>
+          <vUnCom>9.00</vUnCom>
+        </prod>
+      </det>
+    </infNFe>
+  </NFe>
+</nfeProc>

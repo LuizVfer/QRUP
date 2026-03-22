@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
@@ -25,6 +25,18 @@
       async
       defer
     ></script>
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="../manifest.json" />
+    <meta name="theme-color" content="#4CAF50" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="QRUp" />
+    <link rel="apple-touch-icon" href="/images/icon-192x192.png" />
+    <link rel="stylesheet" href="../css/pwa.css" />
 
     <title>Login</title>
   </head>
@@ -341,5 +353,8 @@
       new window.VLibras.Widget("https://vlibras.gov.br/app");
     </script>
     <script src="../js/acessibilidade.js"></script>
+
+    <!-- PWA Script -->
+    <script src="../js/pwa-install.js"></script>
   </body>
 </html>

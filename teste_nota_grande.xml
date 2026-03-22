@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CENÁRIO 3: Nota com muitos itens e fornecedor diferente → testa paginação e listagem -->
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe">
+  <NFe>
+    <infNFe>
+      <ide>
+        <nNF>999003</nNF>
+        <dhEmi>2025-03-12T14:00:00-03:00</dhEmi>
+      </ide>
+      <emit>
+        <CNPJ>11222333000181</CNPJ>
+        <xNome>Atacadão Norte Distribuidora</xNome>
+      </emit>
+      <det nItem="1">
+        <prod>
+          <cEAN>6001111111110</cEAN>
+          <xProd>REFRIGERANTE GUARANÁ 2L</xProd>
+          <qCom>10</qCom>
+          <vUnCom>7.50</vUnCom>
+        </prod>
+      </det>
+      <det nItem="2">
+        <prod>
+          <cEAN>6002222222220</cEAN>
+          <xProd>AGUA COCO 200ML</xProd>
+          <qCom>50</qCom>
+          <vUnCom>3.50</vUnCom>
+        </prod>
+      </det>
+      <det nItem="3">
+        <prod>
+          <cEAN>6003333333330</cEAN>
+          <xProd>CHIPS ORIGINAL 80G</xProd>
+          <qCom>24</qCom>
+          <vUnCom>4.90</vUnCom>
+        </prod>
+      </det>
+      <det nItem="4">
+        <prod>
+          <cEAN>6004444444440</cEAN>
+          <xProd>BISCOITO RECHEADO 130G</xProd>
+          <qCom>36</qCom>
+          <vUnCom>3.25</vUnCom>
+        </prod>
+      </det>
+      <det nItem="5">
+        <prod>
+          <cEAN>6005555555550</cEAN>
+          <xProd>LEITE INTEGRAL 1L</xProd>
+          <qCom>24</qCom>
+          <vUnCom>4.80</vUnCom>
+        </prod>
+      </det>
+      <det nItem="6">
+        <prod>
+          <cEAN>6006666666660</cEAN>
+          <xProd>CAFE SOLUVEL 100G</xProd>
+          <qCom>12</qCom>
+          <vUnCom>12.90</vUnCom>
+        </prod>
+      </det>
+      <det nItem="7">
+        <prod>
+          <cEAN>6007777777770</cEAN>
+          <xProd>ACHOCOLATADO 200ML</xProd>
+          <qCom>30</qCom>
+          <vUnCom>2.80</vUnCom>
+        </prod>
+      </det>
+      <det nItem="8">
+        <prod>
+          <cEAN>6008888888880</cEAN>
+          <xProd>BARRA PROTEICA 45G</xProd>
+          <qCom>20</qCom>
+          <vUnCom>8.90</vUnCom>
+        </prod>
+      </det>
+    </infNFe>
+  </NFe>
+</nfeProc>

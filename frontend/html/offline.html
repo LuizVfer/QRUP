@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline - QRUp</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .offline-container {
+        background: white;
+        border-radius: 20px;
+        padding: 60px 40px;
+        max-width: 500px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .offline-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      .offline-icon svg {
+        width: 60px;
+        height: 60px;
+        color: white;
+      }
+
+      h1 {
+        font-size: 32px;
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      p {
+        font-size: 18px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 30px;
+      }
+
+      .retry-button {
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+      }
+
+      .retry-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+      }
+
+      .retry-button:active {
+        transform: translateY(0);
+      }
+
+      .status {
+        margin-top: 30px;
+        font-size: 14px;
+        color: #999;
+      }
+
+      .status .dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background: #ff9800;
+        border-radius: 50%;
+        margin-right: 8px;
+        animation: blink 1.5s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .offline-container {
+          padding: 40px 30px;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+
+        p {
+          font-size: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="offline-container">
+      <div class="offline-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+          <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+          <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+          <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+          <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+          <line x1="12" y1="20" x2="12.01" y2="20"></line>
+        </svg>
+      </div>
+
+      <h1>Você está offline</h1>
+      <p>
+        Parece que você perdeu a conexão com a internet. Algumas funcionalidades
+        podem estar limitadas, mas você ainda pode acessar conteúdos salvos
+        anteriormente.
+      </p>
+
+      <button class="retry-button" onclick="location.reload()">
+        Tentar Novamente
+      </button>
+
+      <div class="status">
+        <span class="dot"></span>
+        Aguardando conexão...
+      </div>
+    </div>
+
+    <script>
+      // Verifica conexão periodicamente
+      function checkConnection() {
+        if (navigator.onLine) {
+          // Tenta fazer uma requisição real para confirmar
+          fetch("/frontend/html/home.html", { method: "HEAD" })
+            .then(() => {
+              // Conexão restaurada, recarrega a página
+              location.href = "/frontend/html/home.html";
+            })
+            .catch(() => {
+              // Ainda sem conexão, tenta novamente em 3 segundos
+              setTimeout(checkConnection, 3000);
+            });
+        } else {
+          // Tenta novamente em 3 segundos
+          setTimeout(checkConnection, 3000);
+        }
+      }
+
+      // Escuta eventos de conexão
+      window.addEventListener("online", checkConnection);
+      window.addEventListener("offline", () => {
+        console.log("Conexão perdida");
+      });
+
+      // Inicia verificação
+      checkConnection();
+    </script>
+  </body>
+</html>
