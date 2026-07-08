@@ -123,7 +123,6 @@ function carregarProdutos() {
       paginaAtual = 1; // Reseta para a primeira página ao carregar
       renderizarProdutos(produtos);
       renderizarPaginacao(produtos);
-      showToast("Produtos carregados com sucesso!", "success");
     })
     .catch((error) => {
       console.error("Erro ao carregar produtos:", error);
@@ -164,13 +163,12 @@ function carregarProdutosTemporarios() {
     .then((data) => {
       produtosTemporarios = data;
       renderizarProdutosTemporarios(produtosTemporarios);
-      showToast("Produtos temporários carregados com sucesso!", "success");
     })
     .catch((error) => {
       console.error("Erro ao carregar produtos temporários:", error);
       showToast(
         `Erro ao carregar produtos temporários: ${error.message}`,
-        "error"
+        "error",
       );
       if (error.message.includes("Sessão inválida")) {
         window.location.href = "../html/login.html";
@@ -216,7 +214,6 @@ function renderizarProdutos(lista) {
   if (produtosPagina.length === 0) {
     containerItens.innerHTML =
       "<p>Nenhum produto encontrado com os filtros aplicados.</p>";
-    showToast("Nenhum produto encontrado.", "info");
     return;
   }
 
@@ -232,8 +229,8 @@ function renderizarProdutos(lista) {
     item.innerHTML = `
       <span class="titulo-item">${produto.titulo}</span>
       <img src="/Uploads/${produto.imagem}" alt="${
-      produto.titulo
-    }" class="img-item">
+        produto.titulo
+      }" class="img-item">
       <span class="preco-item">R$ ${precoFormatado}</span>
       <span class="estoque-item">Estoque: ${produto.quantidade_estoque}</span>
       <span class="status-item">${produto.ativo ? "Ativo" : "Desativado"}</span>
@@ -254,13 +251,12 @@ function renderizarProdutos(lista) {
     item
       .querySelector(".botao-item-status")
       .addEventListener("click", () =>
-        alterarStatusProduto(produto.produto_id, produto.ativo)
+        alterarStatusProduto(produto.produto_id, produto.ativo),
       );
     fragment.appendChild(item);
   });
 
   containerItens.appendChild(fragment);
-  showToast("Produtos filtrados com sucesso!", "success");
 
   if (typeof JsBarcode === "undefined") {
     import("./gerarBarcode.js")
@@ -279,10 +275,10 @@ function renderizarProdutos(lista) {
             } catch (err) {
               console.error(
                 `Erro ao gerar código de barras para ${barcodeValue}:`,
-                err
+                err,
               );
               canvas.replaceWith(
-                document.createTextNode("Código de barras inválido")
+                document.createTextNode("Código de barras inválido"),
               );
             }
           } else {
@@ -294,7 +290,7 @@ function renderizarProdutos(lista) {
         console.error("Erro ao carregar JsBarcode:", err);
         showToast(
           `Erro ao carregar códigos de barras: ${err.message}`,
-          "error"
+          "error",
         );
       });
   } else {
@@ -312,10 +308,10 @@ function renderizarProdutos(lista) {
         } catch (err) {
           console.error(
             `Erro ao gerar código de barras para ${barcodeValue}:`,
-            err
+            err,
           );
           canvas.replaceWith(
-            document.createTextNode("Código de barras inválido")
+            document.createTextNode("Código de barras inválido"),
           );
         }
       } else {
@@ -392,12 +388,12 @@ function renderizarPaginacao(produtosFiltrados) {
 // Renderiza os produtos temporários na tabela regl
 function renderizarProdutosTemporarios(lista) {
   const tabelaCorpo = document.getElementById(
-    "tabela-corpo-produtos-temporarios"
+    "tabela-corpo-produtos-temporarios",
   );
 
   if (!tabelaCorpo) {
     console.warn(
-      "Elemento para tabela de produtos temporários não encontrado."
+      "Elemento para tabela de produtos temporários não encontrado.",
     );
     return;
   }
@@ -440,10 +436,10 @@ function renderizarProdutosTemporarios(lista) {
       } catch (err) {
         console.error(
           `Erro ao gerar código de barras para ${barcodeValue}:`,
-          err
+          err,
         );
         canvas.replaceWith(
-          document.createTextNode("Código de barras inválido")
+          document.createTextNode("Código de barras inválido"),
         );
       }
     } else {
@@ -487,14 +483,14 @@ function excluirProdutoTemporario(id) {
           console.error("Erro ao excluir produto temporário:", error);
           showToast(
             `Erro ao excluir produto temporário: ${error.message}`,
-            "error"
+            "error",
           );
           if (error.message.includes("Sessão inválida")) {
             window.location.href = "../html/login.html";
           }
         });
     },
-    () => showToast("Ação cancelada.", "info")
+    () => showToast("Ação cancelada.", "info"),
   );
 }
 
@@ -531,7 +527,8 @@ function alterarStatusProduto(id, ativo) {
             }
             return response.json().then((err) => {
               throw new Error(
-                err.message || `Erro ${response.status}: ${response.statusText}`
+                err.message ||
+                  `Erro ${response.status}: ${response.statusText}`,
               );
             });
           }
@@ -541,7 +538,7 @@ function alterarStatusProduto(id, ativo) {
           showToast(
             data.message ||
               `Produto ${ativo ? "desativado" : "ativado"} com sucesso!`,
-            "success"
+            "success",
           );
           carregarProdutos();
         })
@@ -549,14 +546,14 @@ function alterarStatusProduto(id, ativo) {
           console.error("Erro ao alterar status do produto:", error);
           showToast(
             `Erro ao alterar status do produto: ${error.message}`,
-            "error"
+            "error",
           );
           if (error.message.includes("Sessão inválida")) {
             window.location.href = "../html/login.html";
           }
         });
     },
-    () => showToast("Ação cancelada.", "info")
+    () => showToast("Ação cancelada.", "info"),
   );
 }
 
@@ -575,7 +572,7 @@ function adicionarProduto(event) {
   const categoria = document.getElementById("categoria").value;
   let barcode = document.getElementById("barcode").value;
   const quantidade_estoque = parseInt(
-    document.getElementById("quantidade_estoque").value
+    document.getElementById("quantidade_estoque").value,
   );
 
   if (!titulo) {
@@ -597,14 +594,14 @@ function adicionarProduto(event) {
   if (!isValidEAN13(barcode)) {
     showToast(
       "Código de barras EAN-13 inválido. Deve ter 13 dígitos com checksum válido.",
-      "error"
+      "error",
     );
     return;
   }
   if (isNaN(quantidade_estoque) || quantidade_estoque < 0) {
     showToast(
       "Quantidade em estoque deve ser um número inteiro não negativo.",
-      "error"
+      "error",
     );
     return;
   }
@@ -701,7 +698,7 @@ function editarProduto(produto) {
   document
     .getElementById("salvarAlteracao")
     .addEventListener("click", () =>
-      salvarAlteracaoProduto(produto.produto_id, modal)
+      salvarAlteracaoProduto(produto.produto_id, modal),
     );
   document
     .getElementById("cancelarAlteracao")
@@ -722,7 +719,7 @@ function salvarAlteracaoProduto(id, modal) {
   const categoria = document.getElementById("novaCategoria").value;
   const barcode = document.getElementById("novoBarcode").value;
   const quantidade_estoque = parseInt(
-    document.getElementById("novaQuantidadeEstoque").value
+    document.getElementById("novaQuantidadeEstoque").value,
   );
 
   if (!titulo) {
@@ -740,14 +737,14 @@ function salvarAlteracaoProduto(id, modal) {
   if (!isValidEAN13(barcode)) {
     showToast(
       "Código de barras EAN-13 inválido. Deve ter 13 dígitos com checksum válido.",
-      "error"
+      "error",
     );
     return;
   }
   if (isNaN(quantidade_estoque) || quantidade_estoque < 0) {
     showToast(
       "Quantidade em estoque deve ser um número inteiro não negativo.",
-      "error"
+      "error",
     );
     return;
   }
@@ -801,13 +798,13 @@ function incrementarEstoque(event) {
 
   const barcode = document.getElementById("incrementarBarcode").value;
   const quantidade = parseInt(
-    document.getElementById("incrementarQuantidade").value
+    document.getElementById("incrementarQuantidade").value,
   );
 
   if (!isValidEAN13(barcode)) {
     showToast(
       "Código de barras EAN-13 inválido. Deve ter 13 dígitos com checksum válido.",
-      "error"
+      "error",
     );
     return;
   }
@@ -855,7 +852,263 @@ function incrementarEstoque(event) {
     });
 }
 
-// Importa NF-e e atualiza o estoque
+// Parseia o XML da NF-e no lado do cliente para montar o preview de confirmação
+function parsearXmlNfeClientSide(xmlString) {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+  const getText = (el, tag) => {
+    if (!el) return null;
+    const node = el.getElementsByTagName(tag)[0];
+    return node ? node.textContent.trim() : null;
+  };
+
+  const infNFe = xmlDoc.getElementsByTagName("infNFe")[0];
+  if (!infNFe)
+    throw new Error("XML inválido: estrutura infNFe não encontrada.");
+
+  const ide = infNFe.getElementsByTagName("ide")[0];
+  const emit = infNFe.getElementsByTagName("emit")[0];
+  const dets = infNFe.getElementsByTagName("det");
+
+  const numeroNf = getText(ide, "nNF") || "—";
+  const dhEmi = getText(ide, "dhEmi");
+  const cnpjEmitente = getText(emit, "CNPJ") || getText(emit, "CPF") || "—";
+  const nomeEmitente = getText(emit, "xNome") || "—";
+
+  const itens = [];
+  let valorTotal = 0;
+  for (const det of dets) {
+    const prod = det.getElementsByTagName("prod")[0];
+    const nome = getText(prod, "xProd") || "Produto";
+    const ean = getText(prod, "cEAN") || "—";
+    const qtd = parseFloat(getText(prod, "qCom") || "0");
+    const vUnit = parseFloat(getText(prod, "vUnCom") || "0");
+    const vProd = parseFloat(
+      getText(prod, "vProd") || (qtd * vUnit).toFixed(2),
+    );
+    valorTotal += vProd;
+    itens.push({ nome, ean, qtd, vUnit, vProd });
+  }
+
+  return {
+    numeroNf,
+    dhEmi: dhEmi ? new Date(dhEmi) : null,
+    cnpjEmitente,
+    nomeEmitente,
+    itens,
+    valorTotal,
+  };
+}
+
+// Exibe o modal de confirmação com os dados da NF-e antes de dar entrada
+function mostrarConfirmacaoNFe(dadosNfe, formData, token) {
+  const modalExistente = document.getElementById("modal-confirmacao-nfe");
+  if (modalExistente) modalExistente.remove();
+
+  const fmt = (v) =>
+    parseFloat(v).toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  const fmtCnpj = (cnpj) => {
+    const s = (cnpj || "").replace(/\D/g, "");
+    return s.length === 14
+      ? s.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5")
+      : cnpj || "—";
+  };
+  const fmtData = (d) =>
+    d instanceof Date && !isNaN(d)
+      ? d.toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "—";
+
+  const linhasItens = dadosNfe.itens
+    .map(
+      (item, i) => `
+    <tr class="nfe-confirm-row${i % 2 === 1 ? " nfe-confirm-row-alt" : ""}">
+      <td class="nfe-confirm-td nfe-confirm-nome">${item.nome}</td>
+      <td class="nfe-confirm-td nfe-confirm-ean">${item.ean}</td>
+      <td class="nfe-confirm-td nfe-confirm-right">${item.qtd}</td>
+      <td class="nfe-confirm-td nfe-confirm-right">R$\u00a0${fmt(item.vUnit)}</td>
+      <td class="nfe-confirm-td nfe-confirm-right nfe-confirm-bold">R$\u00a0${fmt(item.vProd)}</td>
+    </tr>`,
+    )
+    .join("");
+
+  const modal = document.createElement("div");
+  modal.id = "modal-confirmacao-nfe";
+  modal.className = "modal-resultado-nfe";
+  modal.innerHTML = `
+    <div class="modal-resultado-nfe-content" style="max-width:700px">
+      <div class="modal-resultado-nfe-header">
+        <h2>
+          <i class="fa-solid fa-file-invoice" style="color:#1b5c50"></i>
+          Confirmar Entrada da NF-e
+        </h2>
+        <button class="modal-resultado-nfe-fechar" id="fechar-confirmacao-nfe" aria-label="Fechar modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-resultado-nfe-body">
+        <div class="nfe-confirm-grid">
+          <div class="nfe-confirm-info-item">
+            <span>NF-e N\u00ba</span>
+            <strong>${dadosNfe.numeroNf}</strong>
+          </div>
+          <div class="nfe-confirm-info-item">
+            <span>Fornecedor (Emitente)</span>
+            <strong>${dadosNfe.nomeEmitente}</strong>
+          </div>
+          <div class="nfe-confirm-info-item">
+            <span>CNPJ Emitente</span>
+            <strong>${fmtCnpj(dadosNfe.cnpjEmitente)}</strong>
+          </div>
+          <div class="nfe-confirm-info-item">
+            <span>Data de Emiss\u00e3o</span>
+            <strong>${fmtData(dadosNfe.dhEmi)}</strong>
+          </div>
+          <div class="nfe-confirm-info-item">
+            <span>Total de Itens</span>
+            <strong>${dadosNfe.itens.length} produto(s)</strong>
+          </div>
+          <div class="nfe-confirm-info-item">
+            <span>Valor Total da Nota</span>
+            <strong style="color:#1b5c50">R$\u00a0${fmt(dadosNfe.valorTotal)}</strong>
+          </div>
+        </div>
+
+        <div class="nfe-secao" style="margin-top:1.25rem">
+          <h4 class="nfe-secao-titulo" style="background:#f1f5f9;color:#334155">
+            <i class="fa-solid fa-list-ul"></i> Produtos na Nota (${dadosNfe.itens.length})
+          </h4>
+          <div style="overflow-x:auto">
+            <table class="nfe-confirm-tabela">
+              <thead>
+                <tr>
+                  <th class="nfe-confirm-th">Produto</th>
+                  <th class="nfe-confirm-th">EAN / C\u00f3digo</th>
+                  <th class="nfe-confirm-th nfe-confirm-right">Qtd</th>
+                  <th class="nfe-confirm-th nfe-confirm-right">Vl. Unit.</th>
+                  <th class="nfe-confirm-th nfe-confirm-right">Total Item</th>
+                </tr>
+              </thead>
+              <tbody>${linhasItens}</tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" class="nfe-confirm-td nfe-confirm-total-label">Total Geral</td>
+                  <td class="nfe-confirm-td nfe-confirm-right nfe-confirm-total-valor">R$\u00a0${fmt(dadosNfe.valorTotal)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <p class="nfe-confirm-aviso">
+          <i class="fa-solid fa-circle-info"></i>
+          Ao confirmar, os estoques dos produtos j\u00e1 cadastrados ser\u00e3o atualizados automaticamente.
+          Produtos n\u00e3o cadastrados ser\u00e3o salvos como pendentes.
+        </p>
+      </div>
+      <div class="modal-resultado-nfe-footer">
+        <button class="btn-nfe-pendentes" id="cancelar-confirmacao-nfe">
+          <i class="fa-solid fa-arrow-left"></i> Cancelar
+        </button>
+        <button class="btn-nfe-fechar" id="confirmar-entrada-nfe">
+          <i class="fa-solid fa-check"></i> Confirmar Entrada
+        </button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(modal);
+  document.body.style.overflow = "hidden";
+  requestAnimationFrame(() => modal.classList.add("show"));
+
+  const fecharConfirmacao = () => {
+    document.body.style.overflow = "";
+    modal.classList.remove("show");
+    setTimeout(() => {
+      if (modal.parentNode) modal.remove();
+      // Restaura o form para nova tentativa
+      const formNfe = document.getElementById("form-importar-nfe");
+      if (formNfe) formNfe.reset();
+    }, 250);
+  };
+
+  document
+    .getElementById("fechar-confirmacao-nfe")
+    .addEventListener("click", fecharConfirmacao);
+  document
+    .getElementById("cancelar-confirmacao-nfe")
+    .addEventListener("click", fecharConfirmacao);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) fecharConfirmacao();
+  });
+  document.addEventListener("keydown", function escHandler(e) {
+    if (e.key === "Escape") {
+      fecharConfirmacao();
+      document.removeEventListener("keydown", escHandler);
+    }
+  });
+
+  // Confirmar → envia ao backend
+  document
+    .getElementById("confirmar-entrada-nfe")
+    .addEventListener("click", () => {
+      const btnConfirmar = document.getElementById("confirmar-entrada-nfe");
+      btnConfirmar.disabled = true;
+      btnConfirmar.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processando...`;
+
+      fetch(`${API_URL}/produtos/import-nfe`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+              throw new Error("Sessão inválida. Faça login novamente.");
+            }
+            if (response.status === 409) {
+              return response.json().then((err) => {
+                throw new Error(
+                  err.message || "NF-e já foi importada anteriormente.",
+                );
+              });
+            }
+            return response.json().then((err) => {
+              throw new Error(err.message || "Erro ao importar NF-e");
+            });
+          }
+          return response.json();
+        })
+        .then((data) => {
+          fecharConfirmacao();
+          setTimeout(() => {
+            mostrarResultadoNFe(data, () => {
+              carregarProdutos();
+              carregarProdutosTemporarios();
+            });
+          }, 50);
+        })
+        .catch((error) => {
+          console.error("Erro ao importar NF-e:", error);
+          showToast(`Erro: ${error.message}`, "error");
+          if (error.message.includes("Sessão inválida")) {
+            window.location.href = "../html/login.html";
+          }
+          btnConfirmar.disabled = false;
+          btnConfirmar.innerHTML = `<i class="fa-solid fa-check"></i> Confirmar Entrada`;
+        });
+    });
+}
+
+// Importa NF-e — lê o XML no cliente, exibe preview e só envia ao confirmar
 function importarNFe(event) {
   event.preventDefault();
   const token = getToken();
@@ -871,48 +1124,270 @@ function importarNFe(event) {
     return;
   }
 
+  if (arquivo.size > 10 * 1024 * 1024) {
+    showToast("Arquivo muito grande. Tamanho máximo: 10MB.", "error");
+    return;
+  }
+
+  if (!arquivo.name.toLowerCase().endsWith(".xml")) {
+    showToast("Apenas arquivos .xml são permitidos.", "error");
+    return;
+  }
+
+  const btnSubmit = document.querySelector(
+    "#form-importar-nfe button[type='submit']",
+  );
+  const textoOriginal = btnSubmit ? btnSubmit.innerHTML : "Importar";
+  if (btnSubmit) {
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Lendo...`;
+  }
+
   const formData = new FormData();
   formData.append("nfe", arquivo);
 
-  fetch(`${API_URL}/produtos/import-nfe`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: formData,
-  })
-    .then((response) => {
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          throw new Error("Sessão inválida. Faça login novamente.");
-        }
-        return response.json().then((err) => {
-          throw new Error(err.message || "Erro ao importar NF-e");
-        });
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const dadosNfe = parsearXmlNfeClientSide(e.target.result);
+
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = textoOriginal;
       }
-      return response.json();
-    })
-    .then((data) => {
-      showToast(data.message, "success");
-      if (data.resultados && data.resultados.length > 0) {
-        data.resultados.forEach((resultado) => {
-          showToast(resultado.message, "success");
-        });
-      }
-      if (data.erros && data.erros.length > 0) {
-        data.erros.forEach((erro) => {
-          showToast(erro, "error");
-        });
-      }
+
+      // Fechar modal de seleção e abrir modal de confirmação
       fecharModal(document.getElementById("modal-importar-nfe"));
-      carregarProdutos();
-      carregarProdutosTemporarios();
-    })
-    .catch((error) => {
-      console.error("Erro ao importar NF-e:", error);
-      showToast(`Erro ao importar NF-e: ${error.message}`, "error");
-      if (error.message.includes("Sessão inválida")) {
-        window.location.href = "../html/login.html";
+      setTimeout(() => mostrarConfirmacaoNFe(dadosNfe, formData, token), 50);
+    } catch (err) {
+      showToast(`Erro ao ler XML: ${err.message}`, "error");
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = textoOriginal;
       }
+    }
+  };
+  reader.onerror = () => {
+    showToast("Não foi possível ler o arquivo.", "error");
+    if (btnSubmit) {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = textoOriginal;
+    }
+  };
+  reader.readAsText(arquivo, "UTF-8");
+}
+
+// Exibe modal com resultado detalhado da importação da NF-e
+function mostrarResultadoNFe(data, onFechar) {
+  // Separar resultados de estoque atualizado e pendentes
+  const atualizados = (data.resultados || []).filter(
+    (r) => typeof r === "object" && r.message,
+  );
+  const pendentes = (data.resultados || []).filter(
+    (r) => typeof r === "string",
+  );
+  const erros = data.erros || [];
+
+  const totalAtualizados = atualizados.length;
+  const totalPendentes = pendentes.length;
+  const totalErros = erros.length;
+  const totalItens = totalAtualizados + totalPendentes + totalErros;
+
+  // Montar HTML dos cards de resumo
+  const resumoHTML = `
+    <div class="nfe-resultado-resumo">
+      <div class="nfe-card nfe-card-success">
+        <i class="fa-solid fa-box"></i>
+        <span class="nfe-card-numero">${totalAtualizados}</span>
+        <span class="nfe-card-label">Estoque atualizado</span>
+      </div>
+      <div class="nfe-card nfe-card-warning">
+        <i class="fa-solid fa-clock"></i>
+        <span class="nfe-card-numero">${totalPendentes}</span>
+        <span class="nfe-card-label">Pendentes (não encontrados)</span>
+      </div>
+      <div class="nfe-card nfe-card-error">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span class="nfe-card-numero">${totalErros}</span>
+        <span class="nfe-card-label">Erros</span>
+      </div>
+    </div>
+  `;
+
+  // Montar lista de itens atualizados
+  const atualizadosHTML =
+    totalAtualizados > 0
+      ? `
+    <div class="nfe-secao">
+      <h4 class="nfe-secao-titulo nfe-titulo-success">
+        <i class="fa-solid fa-circle-check"></i> Estoque Atualizado (${totalAtualizados})
+      </h4>
+      <ul class="nfe-lista">
+        ${atualizados
+          .map(
+            (r) => `
+          <li class="nfe-item nfe-item-success">
+            <span class="nfe-item-nome">${r.nome || "Produto"}</span>
+            <span class="nfe-item-detalhe">
+              <i class="fa-solid fa-plus"></i> ${r.quantidade} unidade(s) adicionada(s)
+            </span>
+          </li>
+        `,
+          )
+          .join("")}
+      </ul>
+    </div>
+  `
+      : "";
+
+  // Montar lista de pendentes
+  const pendentesHTML =
+    totalPendentes > 0
+      ? `
+    <div class="nfe-secao">
+      <h4 class="nfe-secao-titulo nfe-titulo-warning">
+        <i class="fa-solid fa-circle-exclamation"></i> Pendentes — produto não cadastrado (${totalPendentes})
+      </h4>
+      <p class="nfe-secao-info">Esses itens foram salvos na lista de produtos pendentes. Cadastre-os manualmente.</p>
+      <ul class="nfe-lista">
+        ${pendentes
+          .map(
+            (msg) => `
+          <li class="nfe-item nfe-item-warning">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>${msg}</span>
+          </li>
+        `,
+          )
+          .join("")}
+      </ul>
+    </div>
+  `
+      : "";
+
+  // Montar lista de erros
+  const errosHTML =
+    totalErros > 0
+      ? `
+    <div class="nfe-secao">
+      <h4 class="nfe-secao-titulo nfe-titulo-error">
+        <i class="fa-solid fa-circle-xmark"></i> Erros (${totalErros})
+      </h4>
+      <ul class="nfe-lista">
+        ${erros
+          .map(
+            (e) => `
+          <li class="nfe-item nfe-item-error">
+            <i class="fa-solid fa-xmark"></i>
+            <span>${e}</span>
+          </li>
+        `,
+          )
+          .join("")}
+      </ul>
+    </div>
+  `
+      : "";
+
+  // Chave de acesso (se disponível)
+  const chaveHTML = data.chave_acesso
+    ? `
+    <p class="nfe-chave">
+      <i class="fa-solid fa-key"></i>
+      <strong>Chave de acesso:</strong>
+      <code>${data.chave_acesso}</code>
+    </p>
+  `
+    : "";
+
+  // Mensagem geral com ícone baseado no resultado
+  const iconeGeral =
+    totalErros === 0 && totalPendentes === 0
+      ? `<i class="fa-solid fa-circle-check" style="color:#10b981"></i>`
+      : totalAtualizados > 0
+        ? `<i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b"></i>`
+        : `<i class="fa-solid fa-circle-xmark" style="color:#ef4444"></i>`;
+
+  // Criar modal
+  const modalExistente = document.getElementById("modal-resultado-nfe");
+  if (modalExistente) modalExistente.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modal-resultado-nfe";
+  modal.className = "modal-resultado-nfe";
+  modal.innerHTML = `
+    <div class="modal-resultado-nfe-content">
+      <div class="modal-resultado-nfe-header">
+        <h2>${iconeGeral} Resultado da Importação</h2>
+        <button class="modal-resultado-nfe-fechar" id="fechar-resultado-nfe" aria-label="Fechar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-resultado-nfe-body">
+        ${chaveHTML}
+        ${resumoHTML}
+        <div class="nfe-detalhes">
+          ${atualizadosHTML}
+          ${pendentesHTML}
+          ${errosHTML}
+          ${totalItens === 0 ? '<p class="nfe-vazio">Nenhum item foi processado.</p>' : ""}
+        </div>
+      </div>
+      <div class="modal-resultado-nfe-footer">
+        ${
+          totalPendentes > 0
+            ? `<button class="btn-nfe-pendentes" onclick="document.getElementById('modal-resultado-nfe').remove(); window.location.href='./adminCadastrarProdutos.html'">
+              <i class="fa-solid fa-list"></i> Ver Produtos Pendentes
+            </button>`
+            : ""
+        }
+        <button class="btn-nfe-fechar" id="btn-fechar-resultado-nfe">
+          <i class="fa-solid fa-check"></i> Entendido
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Bloqueia scroll do body enquanto modal está aberto
+  document.body.style.overflow = "hidden";
+
+  // Eventos de fechar — chama callback após fechar para recarregar produtos
+  const fechar = () => {
+    document.body.style.overflow = "";
+    modal.classList.remove("show");
+    // Aguarda a animação de saída antes de remover do DOM
+    setTimeout(() => {
+      if (modal.parentNode) modal.remove();
+      if (typeof onFechar === "function") onFechar();
+    }, 250);
+  };
+
+  document
+    .getElementById("fechar-resultado-nfe")
+    .addEventListener("click", fechar);
+  document
+    .getElementById("btn-fechar-resultado-nfe")
+    .addEventListener("click", fechar);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) fechar();
+  });
+
+  const escListener = (e) => {
+    if (e.key === "Escape") {
+      fechar();
+      document.removeEventListener("keydown", escListener);
+    }
+  };
+  document.addEventListener("keydown", escListener);
+
+  // Animação de entrada com requestAnimationFrame para garantir render
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      modal.classList.add("show");
     });
+  });
 }
 
 // Fecha um modal na interface
@@ -964,7 +1439,7 @@ function atualizarHorarios(event) {
   if (minutosAbertura >= minutosFechamento) {
     showToast(
       "O horário de abertura deve ser anterior ao horário de fechamento.",
-      "error"
+      "error",
     );
     marcarCampoErro("horario-abertura");
     marcarCampoErro("horario-fechamento");
@@ -1011,7 +1486,7 @@ function atualizarHorarios(event) {
 
       showToast(
         `✅ Horários atualizados com sucesso! Funcionamento: ${horarioAberturaFormatado} às ${horarioFechamentoFormatado}`,
-        "success"
+        "success",
       );
 
       // Marcar campos como sucesso antes de fechar
@@ -1213,10 +1688,10 @@ async function carregarHorariosAtuais() {
 // Configura eventos para as páginas de administração
 document.addEventListener("DOMContentLoaded", () => {
   const isAlterarProdutosPage = window.location.pathname.includes(
-    "adminAlterarProdutos.html"
+    "adminAlterarProdutos.html",
   );
   const isCadastrarProdutosPage = window.location.pathname.includes(
-    "adminCadastrarProdutos.html"
+    "adminCadastrarProdutos.html",
   );
 
   if (isAlterarProdutosPage) {
@@ -1227,7 +1702,7 @@ document.addEventListener("DOMContentLoaded", () => {
       buscaProduto.addEventListener("input", () => filtrarProdutos());
     } else {
       console.warn(
-        "Elemento busca-produto não encontrado (esperado em adminAlterarProdutos.html)"
+        "Elemento busca-produto não encontrado (esperado em adminAlterarProdutos.html)",
       );
     }
 
@@ -1236,7 +1711,7 @@ document.addEventListener("DOMContentLoaded", () => {
       filtroCategoria.addEventListener("change", () => filtrarProdutos());
     } else {
       console.warn(
-        "Elemento filtro-categoria não encontrado (esperado em adminAlterarProdutos.html)"
+        "Elemento filtro-categoria não encontrado (esperado em adminAlterarProdutos.html)",
       );
     }
 
@@ -1245,12 +1720,12 @@ document.addEventListener("DOMContentLoaded", () => {
       filtroStatus.addEventListener("change", () => filtrarProdutos());
     } else {
       console.warn(
-        "Elemento filtro-status-produto não encontrado (esperado em adminAlterarProdutos.html)"
+        "Elemento filtro-status-produto não encontrado (esperado em adminAlterarProdutos.html)",
       );
     }
 
     const botaoAbrirIncrementar = document.getElementById(
-      "abrir-incrementar-estoque"
+      "abrir-incrementar-estoque",
     );
     if (botaoAbrirIncrementar) {
       botaoAbrirIncrementar.addEventListener("click", () => {
@@ -1282,7 +1757,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const botaoCancelarIncrementar = document.getElementById(
-      "cancelar-incrementar"
+      "cancelar-incrementar",
     );
     if (botaoCancelarIncrementar) {
       botaoCancelarIncrementar.addEventListener("click", () => {
@@ -1291,7 +1766,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const botaoCancelarImportar = document.getElementById(
-      "cancelar-importar-nfe"
+      "cancelar-importar-nfe",
     );
     if (botaoCancelarImportar) {
       botaoCancelarImportar.addEventListener("click", () => {
@@ -1312,14 +1787,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const botaoCancelarHorarios = document.getElementById(
-    "cancelar-alterar-horarios"
+    "cancelar-alterar-horarios",
   );
   if (botaoCancelarHorarios) {
     botaoCancelarHorarios.addEventListener("click", fecharModalHorarios);
   }
 
   const botaoFecharModalHorarios = document.getElementById(
-    "fechar-modal-horarios"
+    "fechar-modal-horarios",
   );
   if (botaoFecharModalHorarios) {
     botaoFecharModalHorarios.addEventListener("click", fecharModalHorarios);
@@ -1363,7 +1838,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // =============================================
 
   const botaoFecharEstabelecimento = document.getElementById(
-    "fechar-estabelecimento"
+    "fechar-estabelecimento",
   );
   if (botaoFecharEstabelecimento) {
     botaoFecharEstabelecimento.addEventListener("click", abrirModalFechamento);
@@ -1375,14 +1850,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const botaoCancelarFechamento = document.getElementById(
-    "cancelar-fechamento"
+    "cancelar-fechamento",
   );
   if (botaoCancelarFechamento) {
     botaoCancelarFechamento.addEventListener("click", fecharModalFechamento);
   }
 
   const botaoFecharModalFechamento = document.getElementById(
-    "fechar-modal-fechamento"
+    "fechar-modal-fechamento",
   );
   if (botaoFecharModalFechamento) {
     botaoFecharModalFechamento.addEventListener("click", fecharModalFechamento);
@@ -1415,7 +1890,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Fechar modal ao clicar fora dele
   const modalFechamento = document.getElementById(
-    "modal-fechar-estabelecimento"
+    "modal-fechar-estabelecimento",
   );
   if (modalFechamento) {
     modalFechamento.addEventListener("click", (e) => {
@@ -1438,7 +1913,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (e.ctrlKey || e.metaKey) {
               e.preventDefault();
               const form = document.getElementById(
-                "form-fechar-estabelecimento"
+                "form-fechar-estabelecimento",
               );
               if (form) {
                 form.requestSubmit();
@@ -1456,7 +1931,7 @@ document.addEventListener("DOMContentLoaded", () => {
       formAdicionar.addEventListener("submit", adicionarProduto);
     } else {
       console.warn(
-        "Formulário de adicionar produto não encontrado (esperado em adminCadastrarProdutos.html)"
+        "Formulário de adicionar produto não encontrado (esperado em adminCadastrarProdutos.html)",
       );
     }
     carregarProdutosTemporarios();
@@ -1686,7 +2161,7 @@ function alterarStatusEstabelecimento(event) {
         }
         return response.json().then((err) => {
           throw new Error(
-            err.message || "Erro ao alterar status do estabelecimento"
+            err.message || "Erro ao alterar status do estabelecimento",
           );
         });
       }
@@ -1700,7 +2175,7 @@ function alterarStatusEstabelecimento(event) {
         `${emoji} Estabelecimento ${status} com sucesso!${
           fechando && motivo ? ` Motivo: ${motivo}` : ""
         }`,
-        "success"
+        "success",
       );
 
       setTimeout(() => {

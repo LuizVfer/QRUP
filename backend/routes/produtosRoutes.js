@@ -12,7 +12,6 @@ const path = require('path');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, '../Uploads/'),
   filename: (req, file, cb) => {
-    // Sanitizar nome do arquivo
     const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
     cb(null, Date.now() + '_' + sanitizedName);
   },
@@ -34,13 +33,21 @@ const uploadXML = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => cb(null, '../Uploads/'),
     filename: (req, file, cb) => {
-      const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+      // MELHORIA 2: Nome do arquivo sanitizado desde o início
+      const sanitizedName = file.originalname
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9.\-_]/g, '_')
+        .replace(/\.{2,}/g, '.')
+        .substring(0, 100);
       cb(null, `nfe_${Date.now()}_${sanitizedName}`);
     },
   }),
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'text/xml' || path.extname(file.originalname).toLowerCase() === '.xml') {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const mime = file.mimetype;
+    if (mime === 'text/xml' || mime === 'application/xml' || ext === '.xml') {
       return cb(null, true);
     }
     cb(new Error('Apenas arquivos XML são permitidos'));
@@ -62,25 +69,6 @@ router.post('/',
 router.get('/', 
   validateHttpMethod(['GET']),
   produtoController.findAllActive
-);
-
-// Atualizar produto - PUT apenas, admin, validar ID
-router.put('/:id', 
-  validateHttpMethod(['PUT']),
-  validateRouteParams,
-  authMiddleware, 
-  isAdmin, 
-  upload.single('imagem'), 
-  produtoController.update
-);
-
-// Alterar status - PUT apenas, admin, validar ID
-router.put('/:id/status', 
-  validateHttpMethod(['PUT']),
-  validateRouteParams,
-  authMiddleware, 
-  isAdmin, 
-  produtoController.alterarStatus
 );
 
 // Listar todos (admin) - GET apenas, admin
@@ -109,6 +97,14 @@ router.post('/import-nfe',
   produtoController.importNFe
 );
 
+// MELHORIA 3: Logs de auditoria das importações - GET apenas, admin
+router.get('/logs-nfe', 
+  validateHttpMethod(['GET']),
+  authMiddleware, 
+  isAdmin, 
+  produtoController.getLogsNFe
+);
+
 // Produtos temporários - GET apenas, admin
 router.get('/temp-products', 
   validateHttpMethod(['GET']),
@@ -124,6 +120,25 @@ router.delete('/temp-products/:id',
   authMiddleware, 
   isAdmin, 
   produtoController.deleteTempProduct
+);
+
+// Atualizar produto - PUT apenas, admin, validar ID
+router.put('/:id', 
+  validateHttpMethod(['PUT']),
+  validateRouteParams,
+  authMiddleware, 
+  isAdmin, 
+  upload.single('imagem'), 
+  produtoController.update
+);
+
+// Alterar status - PUT apenas, admin, validar ID
+router.put('/:id/status', 
+  validateHttpMethod(['PUT']),
+  validateRouteParams,
+  authMiddleware, 
+  isAdmin, 
+  produtoController.alterarStatus
 );
 
 module.exports = router;

@@ -5,7 +5,7 @@
   <NFe>
     <infNFe>
       <ide>
-        <nNF>999005</nNF>
+        <nNF>999007</nNF>
         <dhEmi>2025-03-11T10:30:00-03:00</dhEmi>
       </ide>
       <emit>
@@ -19,7 +19,7 @@
           <cEAN>5428045930468</cEAN>
           <xProd>COCA COLA LATA 350ML</xProd>
           <qCom>12</qCom>
-          <vUnCom>2.20</vUnCom>
+          <vUnCom>4.00</vUnCom>
         </prod>
       </det>
       <det nItem="2">

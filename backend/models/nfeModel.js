@@ -4,7 +4,7 @@
 // Segue o mesmo padrão dos outros models do projeto
 // ============================================================
 
-const dbPool = require('../config/db');
+const dbPool = require("../config/db");
 const db = dbPool.promise();
 
 // ------------------------------------------------------------
@@ -44,7 +44,7 @@ const salvarNotaFiscal = async (dadosNota) => {
       status,
       xml_original,
       importado_por,
-    ]
+    ],
   );
 
   return result.insertId; // Retorna o ID da nota criada
@@ -77,7 +77,7 @@ const salvarItensNfe = async (notaFiscalId, itens) => {
        valor_unitario, valor_total_item, produto_id,
        preco_cadastrado, divergencia_preco, status_item)
      VALUES ?`,
-    [valores]
+    [valores],
   );
 };
 
@@ -99,28 +99,28 @@ const listarNotasFiscais = async (filtros = {}) => {
   const condicoes = [];
 
   if (dataInicio) {
-    condicoes.push('nf.data_emissao >= ?');
-    params.push(dataInicio + ' 00:00:00');
+    condicoes.push("nf.data_emissao >= ?");
+    params.push(dataInicio + " 00:00:00");
   }
   if (dataFim) {
-    condicoes.push('nf.data_emissao <= ?');
-    params.push(dataFim + ' 23:59:59');
+    condicoes.push("nf.data_emissao <= ?");
+    params.push(dataFim + " 23:59:59");
   }
   if (status) {
-    condicoes.push('nf.status = ?');
+    condicoes.push("nf.status = ?");
     params.push(status);
   }
   if (cnpj_emitente) {
-    condicoes.push('nf.cnpj_emitente = ?');
+    condicoes.push("nf.cnpj_emitente = ?");
     params.push(cnpj_emitente);
   }
 
-  const where = condicoes.length > 0 ? 'WHERE ' + condicoes.join(' AND ') : '';
+  const where = condicoes.length > 0 ? "WHERE " + condicoes.join(" AND ") : "";
 
   // Busca o total de registros (para paginação)
   const [[{ total }]] = await db.query(
     `SELECT COUNT(*) AS total FROM notas_fiscais nf ${where}`,
-    params
+    params,
   );
 
   // Busca os registros da página atual
@@ -143,7 +143,7 @@ const listarNotasFiscais = async (filtros = {}) => {
      ${where}
      ORDER BY nf.created_at DESC
      LIMIT ? OFFSET ?`,
-    [...params, Number(limit), Number(offset)]
+    [...params, Number(limit), Number(offset)],
   );
 
   return {
@@ -166,7 +166,7 @@ const buscarNotaPorId = async (id) => {
      FROM notas_fiscais nf
      JOIN usuarios u ON u.user_id = nf.importado_por
      WHERE nf.id = ?`,
-    [id]
+    [id],
   );
 
   if (!nota) return null;
@@ -182,7 +182,7 @@ const buscarNotaPorId = async (id) => {
      LEFT JOIN produtos p ON p.produto_id = i.produto_id
      WHERE i.nota_fiscal_id = ?
      ORDER BY i.id ASC`,
-    [id]
+    [id],
   );
 
   return { ...nota, itens };
@@ -206,7 +206,7 @@ const buscarDivergencias = async (notaFiscalId) => {
      LEFT JOIN produtos p ON p.produto_id = i.produto_id
      WHERE i.nota_fiscal_id = ?
        AND i.divergencia_preco = 1`,
-    [notaFiscalId]
+    [notaFiscalId],
   );
 
   return itens;
@@ -220,7 +220,7 @@ const notaJaImportada = async (numero_nf, cnpj_emitente) => {
     `SELECT id FROM notas_fiscais
      WHERE numero_nf = ? AND cnpj_emitente = ?
      LIMIT 1`,
-    [numero_nf, cnpj_emitente]
+    [numero_nf, cnpj_emitente],
   );
 
   return result || null; // Retorna a nota se já existe, null se não existe
@@ -240,7 +240,7 @@ const buscarEstatisticas = async () => {
        SUM(CASE WHEN status = 'processada' THEN 1 ELSE 0 END) AS notas_ok,
        SUM(CASE WHEN status = 'parcial'    THEN 1 ELSE 0 END) AS notas_parciais,
        SUM(CASE WHEN status = 'erro'       THEN 1 ELSE 0 END) AS notas_erro
-     FROM notas_fiscais`
+     FROM notas_fiscais`,
   );
 
   // Última NF-e importada
@@ -248,10 +248,124 @@ const buscarEstatisticas = async () => {
     `SELECT numero_nf, nome_emitente, created_at
      FROM notas_fiscais
      ORDER BY created_at DESC
-     LIMIT 1`
+     LIMIT 1`,
   );
 
   return { ...stats, ultima_importacao: ultima || null };
+};
+
+// ------------------------------------------------------------
+// LISTAR PRODUTOS TEMPORÁRIOS (pendentes de aprovação)
+// ------------------------------------------------------------
+const listarProdutosTemporarios = async () => {
+  const [rows] = await db.query(
+    `SELECT
+       pt.id,
+       pt.nome,
+       pt.barcode,
+       pt.valor_unitario,
+       pt.quantidade,
+       pt.created_at,
+       -- Verifica se já existe produto com esse barcode no catálogo
+       (SELECT COUNT(*) FROM produtos p WHERE p.barcode = pt.barcode AND p.ativo = 1) AS ja_cadastrado
+     FROM produtos_temporarios pt
+     ORDER BY pt.created_at DESC`,
+  );
+  return rows;
+};
+
+// ------------------------------------------------------------
+// APROVAR PRODUTO TEMPORÁRIO
+// Cria o produto no catálogo oficial e remove da tabela temp
+// ------------------------------------------------------------
+const aprovarProdutoTemporario = async (id, dadosExtras = {}) => {
+  const [[temp]] = await db.query(
+    "SELECT * FROM produtos_temporarios WHERE id = ?",
+    [id],
+  );
+
+  if (!temp) return null;
+
+  const categoria = dadosExtras.categoria || "outros";
+  const descricao = dadosExtras.descricao || "";
+  const imagemUrl = dadosExtras.imagem_url || null;
+
+  // Insere no catálogo principal
+  const [result] = await db.query(
+    `INSERT INTO produtos
+       (titulo, descricao, preco, quantidade_estoque, barcode, categoria, imagem_url, ativo)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 1)`,
+    [
+      temp.nome,
+      descricao,
+      temp.valor_unitario,
+      temp.quantidade,
+      temp.barcode,
+      categoria,
+      imagemUrl,
+    ],
+  );
+
+  // Remove da tabela temporária
+  await db.query("DELETE FROM produtos_temporarios WHERE id = ?", [id]);
+
+  return result.insertId; // ID do novo produto criado
+};
+
+// ------------------------------------------------------------
+// REJEITAR PRODUTO TEMPORÁRIO
+// Remove da fila sem cadastrar no catálogo
+// ------------------------------------------------------------
+const rejeitarProdutoTemporario = async (id) => {
+  const [result] = await db.query(
+    "DELETE FROM produtos_temporarios WHERE id = ?",
+    [id],
+  );
+  return result.affectedRows > 0;
+};
+
+// ------------------------------------------------------------
+// ATUALIZAR PREÇOS DIVERGENTES DE UMA NF-E
+// Aplica o preço da nota em todos os produtos com divergência
+// ------------------------------------------------------------
+const atualizarPrecosDivergentes = async (notaFiscalId) => {
+  // Busca todos os itens com divergência de preço
+  const [itens] = await db.query(
+    `SELECT produto_id, valor_unitario
+     FROM itens_nfe
+     WHERE nota_fiscal_id = ? AND divergencia_preco = 1 AND produto_id IS NOT NULL`,
+    [notaFiscalId],
+  );
+
+  if (itens.length === 0) return 0;
+
+  let atualizados = 0;
+  for (const item of itens) {
+    await db.query("UPDATE produtos SET preco = ? WHERE produto_id = ?", [
+      item.valor_unitario,
+      item.produto_id,
+    ]);
+    atualizados++;
+  }
+
+  // Zera as flags de divergência para essa nota
+  await db.query(
+    "UPDATE itens_nfe SET divergencia_preco = 0 WHERE nota_fiscal_id = ? AND divergencia_preco = 1",
+    [notaFiscalId],
+  );
+
+  return atualizados;
+};
+
+// ------------------------------------------------------------
+// BUSCAR XML ORIGINAL DE UMA NF-E
+// ------------------------------------------------------------
+const buscarXmlOriginal = async (id) => {
+  const [[row]] = await db.query(
+    "SELECT numero_nf, xml_original FROM notas_fiscais WHERE id = ?",
+    [id],
+  );
+  return row || null;
 };
 
 module.exports = {
@@ -262,4 +376,9 @@ module.exports = {
   buscarDivergencias,
   notaJaImportada,
   buscarEstatisticas,
+  listarProdutosTemporarios,
+  aprovarProdutoTemporario,
+  rejeitarProdutoTemporario,
+  atualizarPrecosDivergentes,
+  buscarXmlOriginal,
 };

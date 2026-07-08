@@ -19,6 +19,95 @@ const isValidEAN13 = (barcode) => {
   return checksum === calculatedChecksum;
 };
 
+// ============================================================
+// MELHORIA 2: Sanitização rigorosa do nome do arquivo
+// ============================================================
+const sanitizarNomeArquivo = (nomeOriginal) => {
+  // Remove caracteres perigosos, mantém apenas letras, números, ponto e hífen
+  return nomeOriginal
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')   // Remove acentos
+    .replace(/[^a-zA-Z0-9.\-_]/g, '_') // Substitui caracteres inválidos
+    .replace(/\.{2,}/g, '.')           // Previne path traversal com ..
+    .replace(/^\./, '_')               // Não pode começar com ponto
+    .substring(0, 100);                // Limite de 100 caracteres
+};
+
+// ============================================================
+// MELHORIA 1: Validação do conteúdo do XML (é realmente NF-e?)
+// Busca infNFe em todas as variações de namespace que o xml2js pode gerar
+// ============================================================
+const extrairInfNFe = (result) => {
+  return (
+    result?.nfeProc?.NFe?.infNFe       ||
+    result?.NFe?.infNFe                ||
+    result?.nfeProc?.['nfe:NFe']?.infNFe ||
+    result?.['nfe:nfeProc']?.['nfe:NFe']?.infNFe ||
+    result?.nfeProc?.NFe?.['nfe:infNFe'] ||
+    null
+  );
+};
+
+const validarEstruturaXML = (result) => {
+  const erros = [];
+  const nfe = extrairInfNFe(result);
+
+  if (!nfe) {
+    const temRaiz = result?.nfeProc || result?.NFe;
+    if (!temRaiz) {
+      erros.push('XML não é uma NF-e válida: estrutura nao reconhecida');
+    } else {
+      erros.push('Elemento infNFe nao encontrado dentro da NF-e');
+    }
+    return erros;
+  }
+
+  // Verifica apenas o essencial: precisa ter itens (det)
+  if (!nfe.det) {
+    erros.push('NF-e nao contém itens (campo "det" ausente)');
+  }
+
+  return erros;
+};
+
+// ============================================================
+// MELHORIA 4: Extrair chave de acesso da NF-e (44 dígitos)
+// Tenta todas as variações possíveis de onde a chave pode estar
+// ============================================================
+const extrairChaveAcesso = (result) => {
+  try {
+    // Tentativa 1: atributo Id do infNFe (formato: NFe + 44 dígitos)
+    const infNFe = extrairInfNFe(result);
+    if (infNFe?.$?.Id) {
+      const chave = infNFe.$.Id.replace(/^NFe/, '');
+      if (chave.length === 44) return chave;
+    }
+
+    // Tentativa 2: chNFe dentro do protNFe (NF-e com protocolo)
+    const chaveProtNFe =
+      result?.nfeProc?.protNFe?.infProt?.chNFe ||
+      result?.nfeProc?.['nfe:protNFe']?.infProt?.chNFe;
+    if (chaveProtNFe && chaveProtNFe.length === 44) return chaveProtNFe;
+
+    // Tentativa 3: atributo Id do infProt
+    const infProt = result?.nfeProc?.protNFe?.infProt;
+    if (infProt?.$?.Id) {
+      const chave = infProt.$.Id.replace(/^ID/, '');
+      if (chave.length === 44) return chave;
+    }
+
+    // Tentativa 4: dentro do ide da NF-e (cNF + cDV compõem parte da chave)
+    // Fallback: usar nome do arquivo como identificador único
+    console.warn('[NF-e] Chave de acesso não encontrada nas posições padrão');
+    console.warn('[NF-e] Estrutura recebida:', JSON.stringify(Object.keys(result)));
+
+    return null;
+  } catch (err) {
+    console.error('[NF-e] Erro ao extrair chave de acesso:', err.message);
+    return null;
+  }
+};
+
 const produtoSchema = Joi.object({
   titulo: Joi.string().min(3).max(100).required(),
   preco: Joi.number().positive().required(),
@@ -117,7 +206,7 @@ const produtoController = {
 
       ativo = parseInt(ativo);
       if (isNaN(ativo) || (ativo !== 0 && ativo !== 1)) {
-        return res.status(400).json({ message: 'O funerativo deve ser 0 ou 1' });
+        return res.status(400).json({ message: 'O campo ativo deve ser 0 ou 1' });
       }
 
       const [produto] = await Produto.findById(id);
@@ -207,44 +296,108 @@ const produtoController = {
     }
   },
 
+  // ============================================================
+  // importNFe COM AS 4 MELHORIAS IMPLEMENTADAS
+  // ============================================================
   importNFe: async (req, res) => {
+    let xmlPath = null;
+
     try {
       if (!req.file) {
         return res.status(400).json({ message: 'Arquivo XML da NF-e é obrigatório' });
       }
 
-      const xmlPath = path.join(__dirname, '../../Uploads', req.file.filename);
+      // --------------------------------------------------------
+      // MELHORIA 2: Sanitização rigorosa do nome do arquivo
+      // --------------------------------------------------------
+      const nomeSanitizado = sanitizarNomeArquivo(req.file.filename);
+      xmlPath = path.join(__dirname, '../../Uploads', nomeSanitizado);
+
+      // Renomear o arquivo para o nome sanitizado (se diferente)
+      const xmlPathOriginal = path.join(__dirname, '../../Uploads', req.file.filename);
+      if (nomeSanitizado !== req.file.filename) {
+        await fs.rename(xmlPathOriginal, xmlPath).catch(() => {
+          xmlPath = xmlPathOriginal; // fallback se rename falhar
+        });
+      } else {
+        xmlPath = xmlPathOriginal;
+      }
+
       const xmlContent = await fs.readFile(xmlPath, 'utf-8');
+
+      // --------------------------------------------------------
+      // MELHORIA 1: Validação do conteúdo do XML
+      // --------------------------------------------------------
+      // Verificação básica antes de parsear
+      if (!xmlContent.includes('infNFe') && !xmlContent.includes('nfeProc') && !xmlContent.includes('<NFe')) {
+        await fs.unlink(xmlPath);
+        return res.status(400).json({
+          message: 'Arquivo enviado não é uma NF-e válida. Certifique-se de enviar o XML correto.',
+        });
+      }
 
       const parser = new xml2js.Parser({ explicitArray: false });
       const result = await parser.parseStringPromise(xmlContent);
 
-      const nfe = result.nfeProc?.NFe?.infNFe;
+      // Validação estrutural completa da NF-e
+      const errosEstrutura = validarEstruturaXML(result);
+      if (errosEstrutura.length > 0) {
+        await fs.unlink(xmlPath);
+        return res.status(400).json({
+          message: 'Estrutura da NF-e inválida',
+          erros: errosEstrutura,
+        });
+      }
+
+      const nfe = extrairInfNFe(result);
       if (!nfe || !nfe.det) {
         await fs.unlink(xmlPath);
-        return res.status(400).json({ message: 'Estrutura do XML inválida ou sem itens' });
+        return res.status(400).json({ message: 'NF-e sem itens para processar' });
+      }
+
+      // --------------------------------------------------------
+      // MELHORIA 4: Verificar se NF-e já foi importada (chave de acesso)
+      // Usa a chave de acesso (44 dígitos) como identificador único.
+      // Se a chave não for encontrada no XML, usa um hash do conteúdo
+      // como fallback para evitar importações duplicadas.
+      // --------------------------------------------------------
+      let chaveAcesso = extrairChaveAcesso(result);
+
+      // Fallback: se não achou a chave no XML, gera hash do conteúdo
+      if (!chaveAcesso) {
+        const crypto = require('crypto');
+        chaveAcesso = 'HASH_' + crypto.createHash('md5').update(xmlContent).digest('hex');
+        console.warn('[NF-e] Usando hash do conteúdo como chave:', chaveAcesso);
+      }
+
+      const jaImportada = await Produto.findNFeByChave(chaveAcesso);
+      if (jaImportada) {
+        await fs.unlink(xmlPath);
+        return res.status(409).json({
+          message: `Esta NF-e já foi importada anteriormente em ${new Date(jaImportada.importada_em).toLocaleString('pt-BR')}`,
+          chave_acesso: chaveAcesso,
+        });
       }
 
       const itens = Array.isArray(nfe.det) ? nfe.det : [nfe.det];
       const resultados = [];
-      let erros = [];
+      const erros = [];
+      const itensProcessados = []; // Para o log de auditoria
 
       for (const item of itens) {
         const produtoNFe = item.prod;
-        const barcode = produtoNFe.cEAN || produtoNFe.cProd;
+        const barcode = produtoNFe.cEAN && produtoNFe.cEAN !== 'SEM GTIN' ? produtoNFe.cEAN : produtoNFe.cProd;
         const quantidade = parseInt(produtoNFe.qCom);
         const nome = produtoNFe.xProd;
         const valorUnitario = parseFloat(produtoNFe.vUnCom);
 
         if (!barcode) {
           erros.push(`Código de barras ausente para o produto ${nome}`);
-          console.error(`Código de barras ausente para ${nome}`);
           continue;
         }
 
         if (isNaN(quantidade) || quantidade <= 0) {
           erros.push(`Quantidade inválida para o produto ${nome} (${quantidade})`);
-          console.error(`Quantidade inválida: ${quantidade} para ${nome}`);
           continue;
         }
 
@@ -253,40 +406,60 @@ const produtoController = {
         if (!produto) {
           try {
             await Produto.createTempProduct(nome, barcode, valorUnitario, quantidade);
-            resultados.push(`Produto com código de barras ${barcode} (${nome}) não encontrado no sistema e adicionado à tabela temporária`);
+            resultados.push(`Produto ${nome} (${barcode}) adicionado à lista de pendentes`);
+            itensProcessados.push({ barcode, nome, quantidade, acao: 'pendente' });
           } catch (tempErr) {
-            erros.push(`Erro ao adicionar produto ${nome} (barcode: ${barcode}) à tabela temporária: ${tempErr.message}`);
-            console.error(`Erro ao adicionar produto temporário: ${tempErr.message}`);
+            erros.push(`Erro ao salvar produto pendente ${nome}: ${tempErr.message}`);
           }
           continue;
         }
 
         try {
           await Produto.incrementStock(barcode, quantidade);
-          resultados.push({
-            barcode,
-            nome,
-            quantidade,
-            message: `Estoque do produto ${nome} atualizado com sucesso`,
-          });
+          resultados.push({ barcode, nome, quantidade, message: `Estoque de ${nome} atualizado` });
+          itensProcessados.push({ barcode, nome, quantidade, acao: 'estoque_atualizado' });
         } catch (stockErr) {
-          erros.push(`Erro ao incrementar estoque do produto ${nome} (barcode: ${barcode}): ${stockErr.message}`);
-          console.error(`Erro ao incrementar estoque: ${stockErr.message}`);
+          erros.push(`Erro ao incrementar estoque de ${nome}: ${stockErr.message}`);
         }
+      }
+
+      // --------------------------------------------------------
+      // MELHORIA 3: Registrar log de auditoria
+      // --------------------------------------------------------
+      const adminId = req.user?.id || null;
+      await Produto.registrarLogNFe({
+        admin_id: adminId,
+        chave_acesso: chaveAcesso || 'NAO_EXTRAIDA',
+        nome_arquivo: nomeSanitizado,
+        total_itens: itens.length,
+        itens_atualizados: itensProcessados.filter(i => i.acao === 'estoque_atualizado').length,
+        itens_pendentes: itensProcessados.filter(i => i.acao === 'pendente').length,
+        erros: erros.length,
+        detalhes: JSON.stringify({ resultados, erros, itensProcessados }),
+      });
+
+      // --------------------------------------------------------
+      // MELHORIA 4: Registrar chave de acesso como importada
+      // --------------------------------------------------------
+      if (chaveAcesso) {
+        await Produto.registrarNFeImportada(chaveAcesso, adminId).catch(err => {
+          console.error('Erro ao registrar chave de acesso:', err.message);
+        });
       }
 
       await fs.unlink(xmlPath);
 
       res.status(200).json({
         message: 'Processamento da NF-e concluído',
+        chave_acesso: chaveAcesso || null,
         resultados,
         erros: erros.length > 0 ? erros : undefined,
       });
+
     } catch (err) {
       console.error('Erro ao processar NF-e:', err);
-      if (req.file) {
-        const xmlPath = path.join(__dirname, '../../Uploads', req.file.filename);
-        await fs.unlink(xmlPath).catch((unlinkErr) => console.error('Erro ao excluir arquivo XML:', unlinkErr));
+      if (xmlPath) {
+        await fs.unlink(xmlPath).catch(e => console.error('Erro ao excluir XML:', e.message));
       }
       res.status(500).json({ message: 'Erro ao processar NF-e', error: err.message });
     }
@@ -308,6 +481,16 @@ const produtoController = {
       res.status(200).json({ message: 'Produto temporário excluído com sucesso' });
     } catch (err) {
       res.status(500).json({ message: 'Erro ao excluir produto temporário', error: err.message });
+    }
+  },
+
+  // MELHORIA 3: Endpoint para visualizar logs de auditoria (admin)
+  getLogsNFe: async (req, res) => {
+    try {
+      const logs = await Produto.findLogsNFe();
+      res.status(200).json(logs);
+    } catch (err) {
+      res.status(500).json({ message: 'Erro ao buscar logs de NF-e', error: err.message });
     }
   },
 };

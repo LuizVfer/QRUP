@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="../css/adminAlterarProdutos.css" />
+    <link rel="stylesheet" href="../css/toast.css" />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/acessibilidade.css" />
+    <link rel="stylesheet" href="../css/adminLogsNFe.css" />
+    <title>Logs NF-e — Painel Administrativo</title>
+  </head>
+
+  <body>
+    <header>
+      <button
+        id="menu-toggle"
+        class="menu-toggle"
+        aria-label="Abrir/Fechar menu"
+      >
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <h1>Painel Administrativo</h1>
+      <div class="acessibilidade">
+        <button onclick="alterarFonte('+')">A+</button>
+        <button onclick="alterarFonte('-')">A-</button>
+        <button onclick="alterarFonte('reset')">A</button>
+      </div>
+    </header>
+
+    <div id="overlay" class="overlay"></div>
+
+    <nav
+      id="sidebar"
+      class="sidebar"
+      aria-label="Menu de navegação administrativa"
+    >
+      <div class="sidebar-header">
+        <span id="userGreeting">Olá, Usuário</span>
+      </div>
+      <ul>
+        <li><a href="./adminPerfil.html">Perfil</a></li>
+        <li><a href="./adminPedidos.html">Todos os Pedidos</a></li>
+        <li><a href="./adminCadastrarProdutos.html">Cadastrar Produtos</a></li>
+        <li><a href="./adminAlterarProdutos.html">Alterar Produtos</a></li>
+        <li><a href="./adminRelatorio.html">Relatórios</a></li>
+        <li><a href="./adminLogsNFe.html" class="active-link">Logs NF-e</a></li>
+        <li><a href="../html/catalogo.html">Voltar ao Catálogo</a></li>
+      </ul>
+    </nav>
+
+    <main id="main-content">
+      <section class="logs-header">
+        <div class="logs-titulo">
+          <i class="fa-solid fa-file-invoice"></i>
+          <div>
+            <h2>Logs de Importação NF-e</h2>
+            <p>
+              Histórico completo de todas as importações de Notas Fiscais
+              Eletrônicas
+            </p>
+          </div>
+        </div>
+        <button id="btn-exportar-pdf" class="btn-exportar">
+          <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+        </button>
+      </section>
+
+      <!-- Cards de resumo -->
+      <section class="logs-resumo" id="logs-resumo">
+        <div class="resumo-card">
+          <i class="fa-solid fa-file-import"></i>
+          <span class="resumo-numero" id="total-importacoes">—</span>
+          <span class="resumo-label">Total de Importações</span>
+        </div>
+        <div class="resumo-card resumo-success">
+          <i class="fa-solid fa-box"></i>
+          <span class="resumo-numero" id="total-atualizados">—</span>
+          <span class="resumo-label">Itens Atualizados</span>
+        </div>
+        <div class="resumo-card resumo-warning">
+          <i class="fa-solid fa-clock"></i>
+          <span class="resumo-numero" id="total-pendentes">—</span>
+          <span class="resumo-label">Itens Temporários</span>
+        </div>
+        <div class="resumo-card resumo-error">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span class="resumo-numero" id="total-erros">—</span>
+          <span class="resumo-label">Notas com Erro</span>
+        </div>
+        <div
+          class="resumo-card"
+          style="background: linear-gradient(135deg, #1b5c50, #22c55e20)"
+        >
+          <i class="fa-solid fa-coins"></i>
+          <span class="resumo-numero" id="total-valor" style="font-size: 1rem"
+            >—</span
+          >
+          <span class="resumo-label">Valor Total Importado</span>
+        </div>
+      </section>
+
+      <!-- Filtros -->
+      <section class="logs-filtros">
+        <div class="filtro-grupo">
+          <label for="filtro-data-inicio">
+            <i class="fa-solid fa-calendar"></i> Data início
+          </label>
+          <input type="date" id="filtro-data-inicio" />
+        </div>
+        <div class="filtro-grupo">
+          <label for="filtro-data-fim">
+            <i class="fa-solid fa-calendar"></i> Data fim
+          </label>
+          <input type="date" id="filtro-data-fim" />
+        </div>
+        <div class="filtro-grupo">
+          <label for="filtro-status">
+            <i class="fa-solid fa-filter"></i> Status
+          </label>
+          <select id="filtro-status">
+            <option value="">Todos</option>
+            <option value="sucesso">Sucesso total</option>
+            <option value="parcial">Parcial (com pendentes)</option>
+            <option value="erros">Com erros</option>
+          </select>
+        </div>
+        <button id="btn-filtrar" class="btn-filtrar">
+          <i class="fa-solid fa-search"></i> Filtrar
+        </button>
+        <button id="btn-limpar-filtros" class="btn-limpar">
+          <i class="fa-solid fa-xmark"></i> Limpar
+        </button>
+      </section>
+
+      <!-- Tabela de logs -->
+      <section class="logs-tabela-container">
+        <div id="logs-estado" class="logs-estado">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+          <p>Carregando logs...</p>
+        </div>
+        <table class="logs-tabela" id="logs-tabela" style="display: none">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Data / Hora</th>
+              <th>Admin</th>
+              <th>NF-e Nº</th>
+              <th>Emitente</th>
+              <th>Itens</th>
+              <th>Atualizados</th>
+              <th>Temporários</th>
+              <th>Valor Total</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="logs-tbody"></tbody>
+        </table>
+      </section>
+
+      <!-- Paginação -->
+      <div
+        id="paginacao"
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 12px;
+          margin: 16px 0;
+          flex-wrap: wrap;
+        "
+      ></div>
+
+      <!-- Produtos Temporários -->
+      <section style="margin-top: 32px">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+          "
+        >
+          <h3 style="margin: 0">
+            <i class="fa-solid fa-hourglass-half" style="color: #f59e0b"></i>
+            Produtos Pendentes de Aprovação
+            <span
+              id="contador-temporarios"
+              style="font-size: 0.85rem; color: #f59e0b"
+            ></span>
+          </h3>
+          <button
+            id="btn-recarregar-temporarios"
+            style="
+              background: none;
+              border: 1px solid #ccc;
+              padding: 4px 10px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-size: 0.8rem;
+            "
+          >
+            <i class="fa-solid fa-rotate-right"></i> Recarregar
+          </button>
+        </div>
+        <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 12px">
+          Estes produtos vieram de NF-es importadas mas não estão cadastrados no
+          catálogo. Aprove para criá-los ou rejeite para descartá-los.
+        </p>
+        <div id="lista-temporarios"></div>
+      </section>
+
+      <!-- Modal de detalhes -->
+      <div
+        id="modal-detalhes-log"
+        class="modal-detalhes-log"
+        style="display: none"
+      >
+        <div class="modal-detalhes-content">
+          <div class="modal-detalhes-header">
+            <h3>
+              <i class="fa-solid fa-file-lines"></i> Detalhes da Importação
+            </h3>
+            <button id="fechar-modal-detalhes" aria-label="Fechar">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div class="modal-detalhes-body" id="modal-detalhes-body"></div>
+        </div>
+      </div>
+
+      <div class="toast-container" id="toast-container"></div>
+    </main>
+
+    <script src="../js/authGuard.js"></script>
+    <script defer src="../js/adminUtils.js"></script>
+    <script defer src="../js/adminMain.js"></script>
+    <script defer src="../js/acessibilidade.js"></script>
+    <script defer src="../js/adminLogsNFe.js"></script>
+
+    <div vw class="enabled">
+      <div
+        vw-access-button
+        class="active"
+        aria-label="Ativar acessibilidade VLibras"
+      ></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
+  </body>
+</html>

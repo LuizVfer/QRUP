@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc>
+  <NFe>
+    <infNFe>
+      <ide>
+        <cUF>35</cUF>
+        <nNF>999001</nNF>
+        <dhEmi>2026-04-01T09:30:00-03:00</dhEmi>
+      </ide>
+      <emit>
+        <CNPJ>47960950000121</CNPJ>
+        <xNome>Distribuidora São Paulo LTDA</xNome>
+      </emit>
+      <dest>
+        <CNPJ>12345678000195</CNPJ>
+        <xNome>QRUP Comércio e Serviços</xNome>
+      </dest>
+
+      <!-- Produto 1: já cadastrado, preço igual -->
+      <det nItem="1">
+        <prod>
+          <cProd>SP001</cProd>
+          <cEAN>7891000100103</cEAN>
+          <xProd>Refrigerante Cola 350ml Lata</xProd>
+          <qCom>24</qCom>
+          <vUnCom>3.50</vUnCom>
+          <vProd>84.00</vProd>
+        </prod>
+      </det>
+
+      <!-- Produto 2: já cadastrado, mas com preço diferente (gera divergência) -->
+      <det nItem="2">
+        <prod>
+          <cProd>SP002</cProd>
+          <cEAN>7891000200106</cEAN>
+          <xProd>Suco de Laranja 1L Caixa</xProd>
+          <qCom>12</qCom>
+          <vUnCom>6.80</vUnCom>
+          <vProd>81.60</vProd>
+        </prod>
+      </det>
+
+      <!-- Produto 3: já cadastrado -->
+      <det nItem="3">
+        <prod>
+          <cProd>SP003</cProd>
+          <cEAN>7891000300109</cEAN>
+          <xProd>Água Mineral 500ml</xProd>
+          <qCom>48</qCom>
+          <vUnCom>1.20</vUnCom>
+          <vProd>57.60</vProd>
+        </prod>
+      </det>
+
+      <!-- Produto 4: NÃO cadastrado → vai para temporários -->
+      <det nItem="4">
+        <prod>
+          <cProd>SP004</cProd>
+          <cEAN>7896045107024</cEAN>
+          <xProd>Biscoito Recheado Chocolate 140g</xProd>
+          <qCom>30</qCom>
+          <vUnCom>2.90</vUnCom>
+          <vProd>87.00</vProd>
+        </prod>
+      </det>
+
+      <!-- Produto 5: NÃO cadastrado → vai para temporários -->
+      <det nItem="5">
+        <prod>
+          <cProd>SP005</cProd>
+          <cEAN>7891149900011</cEAN>
+          <xProd>Macarrão Espaguete 500g</xProd>
+          <qCom>20</qCom>
+          <vUnCom>4.25</vUnCom>
+          <vProd>85.00</vProd>
+        </prod>
+      </det>
+
+    </infNFe>
+  </NFe>
+</nfeProc>

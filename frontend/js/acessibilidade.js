@@ -299,9 +299,30 @@ document.addEventListener("DOMContentLoaded", function () {
     const observer = new MutationObserver(function (mutations) {
       let deveReprocessar = false;
 
+      // IDs de modais que não devem disparar reprocessamento de fonte
+      const modaisIgnorados = [
+        "modal-resultado-nfe",
+        "modal-importar-nfe",
+        "modal-incrementar-estoque",
+        "modal-alterar-horarios",
+        "modal-fechar-estabelecimento",
+      ];
+
       mutations.forEach(function (mutation) {
         if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-          deveReprocessar = true;
+          mutation.addedNodes.forEach(function (node) {
+            // Ignora nós de texto e modais específicos
+            if (node.nodeType !== 1) return;
+            const id = node.id || "";
+            const classList = node.className || "";
+            const ehModalIgnorado =
+              modaisIgnorados.includes(id) ||
+              classList.includes("modal-resultado-nfe") ||
+              classList.includes("toast");
+            if (!ehModalIgnorado) {
+              deveReprocessar = true;
+            }
+          });
         }
       });
 

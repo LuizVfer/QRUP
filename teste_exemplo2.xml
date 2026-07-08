@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc>
+  <NFe>
+    <infNFe>
+      <ide>
+        <cUF>35</cUF>
+        <nNF>999002</nNF>
+        <dhEmi>2026-04-01T14:15:00-03:00</dhEmi>
+      </ide>
+      <emit>
+        <CNPJ>33041260096518</CNPJ>
+        <xNome>Atacadão do Norte Comércio LTDA</xNome>
+      </emit>
+      <dest>
+        <CNPJ>12345678000195</CNPJ>
+        <xNome>QRUP Comércio e Serviços</xNome>
+      </dest>
+
+      <!-- Produto 1 -->
+      <det nItem="1">
+        <prod>
+          <cProd>AT001</cProd>
+          <cEAN>7891000100103</cEAN>
+          <xProd>Refrigerante Cola 350ml Lata</xProd>
+          <qCom>36</qCom>
+          <vUnCom>3.50</vUnCom>
+          <vProd>126.00</vProd>
+        </prod>
+      </det>
+
+      <!-- Produto 2 -->
+      <det nItem="2">
+        <prod>
+          <cProd>AT002</cProd>
+          <cEAN>7891000300109</cEAN>
+          <xProd>Água Mineral 500ml</xProd>
+          <qCom>60</qCom>
+          <vUnCom>1.20</vUnCom>
+          <vProd>72.00</vProd>
+        </prod>
+      </det>
+
+      <!-- Produto 3: não cadastrado → temporário -->
+      <det nItem="3">
+        <prod>
+          <cProd>AT003</cProd>
+          <cEAN>7891234100015</cEAN>
+          <xProd>Achocolatado Caixinha 200ml</xProd>
+          <qCom>24</qCom>
+          <vUnCom>2.75</vUnCom>
+          <vProd>66.00</vProd>
+        </prod>
+      </det>
+
+      <!-- Produto 4: não cadastrado → temporário -->
+      <det nItem="4">
+        <prod>
+          <cProd>AT004</cProd>
+          <cEAN>7896102503010</cEAN>
+          <xProd>Arroz Parboilizado Tipo 1 5kg</xProd>
+          <qCom>10</qCom>
+          <vUnCom>22.90</vUnCom>
+          <vProd>229.00</vProd>
+        </prod>
+      </det>
+
+      <!-- Produto 5: não cadastrado → temporário -->
+      <det nItem="5">
+        <prod>
+          <cProd>AT005</cProd>
+          <cEAN>7896004902102</cEAN>
+          <xProd>Feijão Carioca Tipo 1 1kg</xProd>
+          <qCom>15</qCom>
+          <vUnCom>7.49</vUnCom>
+          <vProd>112.35</vProd>
+        </prod>
+      </det>
+
+      <!-- Produto 6 -->
+      <det nItem="6">
+        <prod>
+          <cProd>AT006</cProd>
+          <cEAN>7891000200106</cEAN>
+          <xProd>Suco de Laranja 1L Caixa</xProd>
+          <qCom>18</qCom>
+          <vUnCom>5.99</vUnCom>
+          <vProd>107.82</vProd>
+        </prod>
+      </det>
+
+    </infNFe>
+  </NFe>
+</nfeProc>
